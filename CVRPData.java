@@ -133,13 +133,16 @@ public class CVRPData {
 
 	    // read each node coordinate and add it to coords[][]
 	    String[] words;
+      // System.out.print("{");
 	    for (int node=1; node<= NUM_NODES; node++) {
 		input = reader.readLine();
 		words = input.split(" "); // format: node number, x-coordinate, y-coordinate
 		coords[node][X_COORDINATE] = Integer.valueOf(words[1]);
 		coords[node][Y_COORDINATE] = Integer.valueOf(words[2]);
 		//System.out.println(node + " " + coords[node][X_COORDINATE] + " " + coords[node][Y_COORDINATE]);
+    // System.out.print("{" + coords[node][X_COORDINATE] + ", " + coords[node][Y_COORDINATE] + "}, ");
 	    }
+      // System.out.print("}");
 
 	    // read line saying "DEMAND_SECTION"
 	    input = reader.readLine();
@@ -147,12 +150,15 @@ public class CVRPData {
 		quit("I expected to read DEMAND_SECTION but I found: " + input);
 
 	    // read the demand for each node
+        System.out.print("{");
 	    for (int node=1; node<= NUM_NODES; node++) {
 		input = reader.readLine();
 		words = input.split(" "); // format: node number, demand
 		demand[node] = Integer.valueOf(words[1]);
 		//System.out.println(node + " " + demand[node]);
+    System.out.print(demand[node] + ", ");
 	    }
+        System.out.print("}");
 	    reader.close();
 	}
         catch(FileNotFoundException e) {
