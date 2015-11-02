@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Solution{
 
   final static int DIMENSION = 250;
@@ -106,7 +108,38 @@ public class Solution{
     return matrix;
   }
 
+  /**
+   * 48
+   */
+  static int getAverageDemand() {
+    int sum = 0;
+    for(int i=0; i<demand.length; i++) {
+      sum += demand[i];
+    }
+    return (int)(sum/demand.length);
+  }
+
+  /**
+   * Get permutation
+   */
+  static void getPermutation() {
+    Integer[] array = new Integer[DIMENSION];
+    for(int i=0; i<DIMENSION; i++) {
+      array[i] = i;
+    }
+    Collections.shuffle(Arrays.asList(array));
+    for(int x: array) {
+      System.out.print(x + " ");
+    }
+    System.out.println();
+  }
+
+  static void prepare() {
+    double[][] euclidean = getEuclideanDistanceMatrix();
+    boolean[] supplied = new boolean[DIMENSION];
+  }
+
   public static void main(String[] args) {
-    
+    getPermutation();
   }
 }
