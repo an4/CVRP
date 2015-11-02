@@ -122,16 +122,49 @@ public class Solution{
   /**
    * Get permutation
    */
-  static void getPermutation() {
+  static Integer[] getPermutation() {
     Integer[] array = new Integer[DIMENSION];
     for(int i=0; i<DIMENSION; i++) {
       array[i] = i;
     }
     Collections.shuffle(Arrays.asList(array));
-    for(int x: array) {
-      System.out.print(x + " ");
+    // for(int x: array) {
+    //   System.out.print(x + " ");
+    // }
+    return array;
+  }
+
+  /**
+   * PMX
+   */
+  static void swapPosition(int gene1, int gene2, Integer[] baby) {
+    int pos1 = 0;
+    int pos2 = 0;
+    for(int i=0; i<baby.length; i++) {
+      if(baby[i] == gene1) {
+        pos1 = i;
+      }
+      if(baby[i] == gene2) {
+        pos2 = i;
+      }
     }
-    System.out.println();
+    baby[pos1] = gene2;
+    baby[pos2] = gene1;
+  }
+
+  static Integer[] PMX(Integer[] mum, Integer[] dad) {
+    Random random = new Random();
+    int begin = random.nextInt(DIMENSION-1);
+    int end = random.nextInt(DIMENSION-1-begin) + begin;
+    Integer[] baby1 = Arrays.copyOf(mum, mum.length);
+    Integer[] baby2 = Arrays.copyOf(dad, dad.length);
+    for(int pos=begin; pos<end; pos++) {
+      int gene1 = mum[pos];
+      int gene2 = dad[pos];
+      swapPosition(gene1, gene2, baby1);
+      swapPosition(gene1, gene2, baby2);
+    }
+    return baby1;
   }
 
   static void prepare() {
@@ -140,6 +173,13 @@ public class Solution{
   }
 
   public static void main(String[] args) {
-    getPermutation();
+    Integer[] a = getPermutation();
+    Integer[] b = getPermutation();
+    Integer[] c = PMX(a, b);
+
+    for(int x: c) {
+      System.out.print(x + " ");
+    }
+    System.out.println();
   }
 }
