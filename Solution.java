@@ -59,6 +59,9 @@ public class Solution{
   28, 72, 49, 58, 84, 58, 41, 98, 77, 57, 39, 99, 83, 54, 86, 2, 14, 42, 14,
   55, 2, 18, 17, 22, 28, 3, 96, 53, 15, 36, 98, 78, 92, 65, 64, 43, 50};
 
+  /* Euclidean Distance Matrix */
+  final static double[][] EDM = getEuclideanDistanceMatrix();
+
 /**
  * Min_X: -99
  * Max_X: 99
@@ -134,8 +137,21 @@ public class Solution{
     return array;
   }
 
+  static double getFitness(Integer[] chr) {
+    double fit = 0.0;
+    for(int i=1; i<chr.length; i++) {
+      fit += EDM[chr[i]][chr[i-1]];
+    }
+    return fit;
+  }
+
+  static boolean condition() {
+    return true;
+  }
+
+
   /**
-   * PMX
+   * PMX - Partially matched crossover
    */
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
@@ -152,10 +168,10 @@ public class Solution{
     baby[pos2] = gene1;
   }
 
-  static Integer[] PMX(Integer[] mum, Integer[] dad) {
+  static Integer[] PMX(Integer[] mum, Integer[] dad, int begin, int end) {
     Random random = new Random();
-    int begin = random.nextInt(DIMENSION-1);
-    int end = random.nextInt(DIMENSION-1-begin) + begin;
+    // int begin = random.nextInt(DIMENSION-1);
+    // int end = random.nextInt(DIMENSION-1-begin) + begin;
     Integer[] baby1 = Arrays.copyOf(mum, mum.length);
     Integer[] baby2 = Arrays.copyOf(dad, dad.length);
     for(int pos=begin; pos<end; pos++) {
@@ -164,22 +180,59 @@ public class Solution{
       swapPosition(gene1, gene2, baby1);
       swapPosition(gene1, gene2, baby2);
     }
-    return baby1;
+    if(getFitness(baby1) > getFitness(baby2)) {
+      return baby1;
+    }
+    return baby2;
   }
 
-  static void prepare() {
-    double[][] euclidean = getEuclideanDistanceMatrix();
-    boolean[] supplied = new boolean[DIMENSION];
+  /* Crossover - Find fittest child */
+  static Integer[] crossover(Integer[] chr1, Integer[] chr2) {
+    Integer[] temp = new Integer[DIMENSION];
+    double min_fitness = 30000.0;
+    Integer[] min_chr = new Integer[DIMENSION];
+    for(int i=0; i<DIMENSION-1; i++) {
+      for(int j=i+1; j<DIMENSION; j++) {
+        temp = PMX(chr1, chr2, i, j);
+        if(getFitness(temp) < min_fitness) {
+          min_fitness = getFitness(temp);
+          min_chr = Arrays.copyOf(temp, temp.length);
+        }
+      }
+    }
+    return min_chr;
+  }
+
+  /**
+   * Get initial population.
+   * int n - size of population
+   * double max_fitness - maximum fitness allowed
+   */
+  static Integer[][] getInitialPopulation(int n, double max_fitness) {
+    Integer[][] population = new Integer[n][DIMENSION];
+    for(int i=0 ; i<n; i++) {
+      Integer[] temp = getPermutation();
+      while(getFitness(temp) > max_fitness) {
+        temp = getPermutation();
+      }
+      population[i] = Arrays.copyOf(temp, temp.length);
+    }
+    return population;
+  }
+
+  /**
+   * Get initial population.
+   * int n - size of population
+   */
+  static Integer[][] getInitialPopulation(int n) {
+    Integer[][] population = new Integer[n][DIMENSION];
+    for(int i=0 ; i<n; i++) {
+      population[i] = getPermutation();
+    }
+    return population;
   }
 
   public static void main(String[] args) {
-    Integer[] a = getPermutation();
-    Integer[] b = getPermutation();
-    Integer[] c = PMX(a, b);
-
-    for(int x: c) {
-      System.out.print(x + " ");
-    }
-    System.out.println();
+    Integer[][] population = getInitialPopulation(10);
   }
 }
