@@ -62,37 +62,6 @@ public class Solution{
   /* Euclidean Distance Matrix */
   final static double[][] EDM = getEuclideanDistanceMatrix();
 
-/**
- * Min_X: -99
- * Max_X: 99
- * Min_Y: -97
- * Max_Y: 99
- */
-  static void getRange() {
-    int minX = Integer.MAX_VALUE;
-    int maxX = Integer.MIN_VALUE;
-    int minY = Integer.MAX_VALUE;
-    int maxY = Integer.MIN_VALUE;
-    for(int i=0; i<position.length; i++) {
-      if(position[i][0] < minX) {
-        minX = position[i][0];
-      }
-      if(position[i][0] > maxX) {
-        maxX = position[i][0];
-      }
-      if(position[i][1] < minY) {
-        minY = position[i][1];
-      }
-      if(position[i][1] > maxY) {
-        maxY = position[i][1];
-      }
-    }
-    System.out.println("Min_X: " + minX);
-    System.out.println("Max_X: " + maxX);
-    System.out.println("Min_Y: " + minY);
-    System.out.println("Max_Y: " + maxY);
-  }
-
   static double getEuclideanDistance(int x1, int y1, int x2, int y2) {
     return Math.sqrt(Math.pow((x1-x2),2) + Math.pow((y1-y2),2));
   }
@@ -112,17 +81,6 @@ public class Solution{
   }
 
   /**
-   * 48
-   */
-  static int getAverageDemand() {
-    int sum = 0;
-    for(int i=0; i<demand.length; i++) {
-      sum += demand[i];
-    }
-    return (int)(sum/demand.length);
-  }
-
-  /**
    * Get permutation
    */
   static Integer[] getPermutation() {
@@ -131,9 +89,6 @@ public class Solution{
       array[i] = i;
     }
     Collections.shuffle(Arrays.asList(array));
-    // for(int x: array) {
-    //   System.out.print(x + " ");
-    // }
     return array;
   }
 
@@ -144,11 +99,6 @@ public class Solution{
     }
     return fit;
   }
-
-  static boolean condition() {
-    return true;
-  }
-
 
   /**
    * PMX - Partially matched crossover
@@ -168,39 +118,25 @@ public class Solution{
     baby[pos2] = gene1;
   }
 
-  static Integer[] PMX(Integer[] mum, Integer[] dad, int begin, int end) {
-    Random random = new Random();
-    // int begin = random.nextInt(DIMENSION-1);
-    // int end = random.nextInt(DIMENSION-1-begin) + begin;
-    Integer[] baby1 = Arrays.copyOf(mum, mum.length);
-    Integer[] baby2 = Arrays.copyOf(dad, dad.length);
+  static Integer[][] PMX(Integer[] mum, Integer[] dad, int begin, int end) {
+    Integer[][] baby = new Integer[2][DIMENSION];
+    baby[0] = Arrays.copyOf(mum, mum.length);
+    baby[1] = Arrays.copyOf(dad, dad.length);
     for(int pos=begin; pos<end; pos++) {
       int gene1 = mum[pos];
       int gene2 = dad[pos];
-      swapPosition(gene1, gene2, baby1);
-      swapPosition(gene1, gene2, baby2);
+      swapPosition(gene1, gene2, baby[0]);
+      swapPosition(gene1, gene2, baby[1]);
     }
-    if(getFitness(baby1) > getFitness(baby2)) {
-      return baby1;
-    }
-    return baby2;
+    return baby;
   }
 
-  /* Crossover - Find fittest child */
-  static Integer[] crossover(Integer[] chr1, Integer[] chr2) {
-    Integer[] temp = new Integer[DIMENSION];
-    double min_fitness = 30000.0;
-    Integer[] min_chr = new Integer[DIMENSION];
-    for(int i=0; i<DIMENSION-1; i++) {
-      for(int j=i+1; j<DIMENSION; j++) {
-        temp = PMX(chr1, chr2, i, j);
-        if(getFitness(temp) < min_fitness) {
-          min_fitness = getFitness(temp);
-          min_chr = Arrays.copyOf(temp, temp.length);
-        }
-      }
-    }
-    return min_chr;
+  /* Crossover*/
+  static Integer[][] crossover(Integer[] mum, Integer[] dad) {
+    Random random = new Random();
+    int begin = random.nextInt(DIMENSION-1);
+    int end = random.nextInt(DIMENSION-1-begin) + begin;
+    return PMX(mum, dad, begin, end);
   }
 
   /**
@@ -232,7 +168,20 @@ public class Solution{
     return population;
   }
 
+  static Integer[][] getNextGeneration(Integer[][] initial, int n) {
+    ArrayList<Integer[]> list = new ArrayList<Integer[]>();
+    
+  }
+
   public static void main(String[] args) {
+    int size = 10;
     Integer[][] population = getInitialPopulation(10);
+    for(int i=0; i<1000; i++) {
+      population = getNextGeneration(population, 10);
+    }
+    for(Integer[] x: population) {
+      System.out.println(getFitness(x));
+      System.out.println(Arrays.toString(x));
+    }
   }
 }
