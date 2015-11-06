@@ -4,14 +4,14 @@ class Chromosome {
   final static int DIMENSION = 250;
 
   private Integer[] genes = new Integer[DIMENSION];
-  private double fitness = 0.0;
+  private Double fitness = 0.0;
 
-  public Chromosome(Integer[] genes, double fitness) {
+  public Chromosome(Integer[] genes, Double fitness) {
     this.genes = Arrays.copyOf(genes, genes.length);
     this.fitness = fitness;
   }
 
-  public double getFitness() {
+  public Double getFitness() {
     return this.fitness;
   }
 
@@ -152,39 +152,59 @@ public class Solution{
   }
 
   /* Crossover*/
-  static Integer[][] crossover(Integer[] mum, Integer[] dad) {
+  static Chromosome[] crossover(Chromosome mum, Chromosome dad) {
     Random random = new Random();
     int begin = random.nextInt(DIMENSION-1);
     int end = random.nextInt(DIMENSION-1-begin) + begin;
-    return PMX(mum, dad, begin, end);
+    Integer[][] baby = PMX(mum.getGenes(), dad.getGenes(), begin, end);
+    Chromosome[] babies = new Chromosome[2];
+    babies[0] = new Chromosome(baby[0], getFitness(baby[0]));
+    babies[1] = new Chromosome(baby[1], getFitness(baby[1]));
+    return babies;
+  }
+
+  /* Mutation */
+  static Chromosome mutation(Chromosome x) {
+    Random random = new Random();
+    int a = random.nextInt(DIMENSION);
+    int b = random.nextInt(DIMENSION);
+    Integer[] temp = x.getGenes();
+    swapPosition(temp[a], temp[b], temp);
+    return new Chromosome(temp, getFitness(temp));
   }
 
   /**
    * Get initial population.
    * int n - size of population
    */
-  static Integer[][] getInitialPopulation(int n) {
-    Integer[][] population = new Integer[n][DIMENSION];
+  static Chromosome[] getInitialPopulation(int n) {
+    Chromosome[] population = new Chromosome[n];
     for(int i=0 ; i<n; i++) {
-      population[i] = getPermutation();
+      Integer[] temp = getPermutation();
+      population[i] = new Chromosome(temp, getFitness(temp));
     }
+
+    Arrays.sort(population, new Comparator<Chromosome>() {
+        @Override
+        public int compare(Chromosome c1, Chromosome c2) {
+            return c1.getFitness().compareTo(c2.getFitness());
+        }
+    });
+
     return population;
   }
-
-  static Integer[][] getNextGeneration(Integer[][] initial, int n) {
-    ArrayList<Integer[]> list = new ArrayList<Integer[]>();
-
-  }
+  //
+  // static Integer[][] getNextGeneration(Chromosome[] initial, int n) {
+  //   ArrayList<Chromosome> list = new ArrayList<Chromosome>();
+  //
+  // }
 
   public static void main(String[] args) {
-    int size = 10;
-    Integer[][] population = getInitialPopulation(10);
-    for(int i=0; i<1000; i++) {
-      population = getNextGeneration(population, 10);
-    }
-    for(Integer[] x: population) {
-      System.out.println(getFitness(x));
-      System.out.println(Arrays.toString(x));
+    int size = 1000;
+    Chromosome[] population = getInitialPopulation(size);
+    for(Chromosome x: population) {
+      System.out.println(x.getFitness());
+      // System.out.println(Arrays.toString(x.getGenes()));
     }
   }
 }
