@@ -1,5 +1,25 @@
 import java.util.*;
 
+class Chromosome {
+  final static int DIMENSION = 250;
+
+  private Integer[] genes = new Integer[DIMENSION];
+  private double fitness = 0.0;
+
+  public Chromosome(Integer[] genes, double fitness) {
+    this.genes = Arrays.copyOf(genes, genes.length);
+    this.fitness = fitness;
+  }
+
+  public double getFitness() {
+    return this.fitness;
+  }
+
+  public Integer[] getGenes() {
+    return this.genes;
+  }
+}
+
 public class Solution{
 
   final static int DIMENSION = 250;
@@ -142,23 +162,6 @@ public class Solution{
   /**
    * Get initial population.
    * int n - size of population
-   * double max_fitness - maximum fitness allowed
-   */
-  static Integer[][] getInitialPopulation(int n, double max_fitness) {
-    Integer[][] population = new Integer[n][DIMENSION];
-    for(int i=0 ; i<n; i++) {
-      Integer[] temp = getPermutation();
-      while(getFitness(temp) > max_fitness) {
-        temp = getPermutation();
-      }
-      population[i] = Arrays.copyOf(temp, temp.length);
-    }
-    return population;
-  }
-
-  /**
-   * Get initial population.
-   * int n - size of population
    */
   static Integer[][] getInitialPopulation(int n) {
     Integer[][] population = new Integer[n][DIMENSION];
@@ -170,7 +173,7 @@ public class Solution{
 
   static Integer[][] getNextGeneration(Integer[][] initial, int n) {
     ArrayList<Integer[]> list = new ArrayList<Integer[]>();
-    
+
   }
 
   public static void main(String[] args) {
