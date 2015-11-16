@@ -2,9 +2,7 @@ import java.util.*;
 
 public class Solution{
   final static int DIMENSION = Data.DIMENSION;
-  /**
-   * PMX - Partially matched crossover
-   */
+
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
     int pos2 = 0;
@@ -20,6 +18,9 @@ public class Solution{
     baby[pos2] = gene1;
   }
 
+  /**
+   * PMX - Partially matched crossover
+   */
   static Integer[][] PMX(Integer[] mum, Integer[] dad, int begin, int end) {
     Integer[][] baby = new Integer[2][DIMENSION];
     baby[0] = Arrays.copyOf(mum, mum.length);
@@ -85,44 +86,6 @@ public class Solution{
     return new Chromosome(temp);
   }
 
-  /**
-   * Get initial population.
-   * int n - size of population
-   */
-  static Chromosome[] getInitialPopulation(int n) {
-    Chromosome[] population = new Chromosome[n];
-    for(int i=0 ; i<n; i++) {
-      population[i] = new Chromosome();
-    }
-
-    Arrays.sort(population, new Comparator<Chromosome>() {
-        @Override
-        public int compare(Chromosome c1, Chromosome c2) {
-            return c1.getDistance().compareTo(c2.getDistance());
-        }
-    });
-
-    return population;
-  }
-
-  /**
-   * Get average fitness level.
-   */
-  static double getAvgFitness(Chromosome[] population) {
-    double sum = 0.0;
-    for(int i=0; i<population.length; i++) {
-      sum += population[i].getFitness();
-    }
-    return (double)sum/population.length;
-  }
-
-  /**
-   * Return fittest chromosome from the given population.
-   */
-  static Chromosome getFittest(Chromosome[] population) {
-    return population[0];
-  }
-
   static Chromosome[] getNextGeneration(Chromosome[] initial, int n) {
     List<Chromosome> list = new ArrayList<Chromosome>();
     Random random = new Random();
@@ -137,11 +100,9 @@ public class Solution{
 
   public static void main(String[] args) {
     int size = 25;
-    Chromosome[] population = getInitialPopulation(size);
-    for(Chromosome x: population) {
+    Population population = new Population(25);
+    for(Chromosome x: population.getChromosomes()) {
       System.out.println(x.getDistance());
-      System.out.println(x.getFitness());
-      // System.out.println(Arrays.toString(x.getGenes()));
     }
   }
 }
