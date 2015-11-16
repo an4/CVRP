@@ -1,25 +1,5 @@
 import java.util.*;
 
-class Chromosome {
-  final static int DIMENSION = 250;
-
-  private Integer[] genes = new Integer[DIMENSION];
-  private Double fitness = 0.0;
-
-  public Chromosome(Integer[] genes, Double fitness) {
-    this.genes = Arrays.copyOf(genes, genes.length);
-    this.fitness = fitness;
-  }
-
-  public Double getFitness() {
-    return this.fitness;
-  }
-
-  public Integer[] getGenes() {
-    return this.genes;
-  }
-}
-
 public class Solution{
 
   final static int DIMENSION = 250;
@@ -109,10 +89,13 @@ public class Solution{
       array[i] = i;
     }
     Collections.shuffle(Arrays.asList(array));
+    if(array[0] != 0) {
+      swapPosition(0, array[0], array);
+    }
     return array;
   }
 
-  static double getFitness(Integer[] chr) {
+  static double getDistance(Integer[] chr) {
     double fit = 0.0;
     for(int i=1; i<chr.length; i++) {
       fit += EDM[chr[i]][chr[i-1]];
@@ -152,25 +135,55 @@ public class Solution{
   }
 
   /* Crossover*/
-  static Chromosome[] crossover(Chromosome mum, Chromosome dad) {
+  static Chromosome[] pmxCrossover(Chromosome mum, Chromosome dad) {
     Random random = new Random();
-    int begin = random.nextInt(DIMENSION-1);
+    int begin = random.nextInt(DIMENSION-2) + 1;
     int end = random.nextInt(DIMENSION-1-begin) + begin;
     Integer[][] baby = PMX(mum.getGenes(), dad.getGenes(), begin, end);
     Chromosome[] babies = new Chromosome[2];
-    babies[0] = new Chromosome(baby[0], getFitness(baby[0]));
-    babies[1] = new Chromosome(baby[1], getFitness(baby[1]));
+    babies[0] = new Chromosome(baby[0], getDistance(baby[0]));
+    babies[1] = new Chromosome(baby[1], getDistance(baby[1]));
     return babies;
   }
 
-  /* Mutation */
-  static Chromosome mutation(Chromosome x) {
+  static Chromosome crossover(Chromosome parent1, Chromosome parent2) {
     Random random = new Random();
-    int a = random.nextInt(DIMENSION);
-    int b = random.nextInt(DIMENSION);
+    int begin = random.nextInt(DIMENSION-2) + 1;
+    int end = random.nextInt(DIMENSION-1-begin) + begin;
+    Integer[] mum = parent1.getGenes();
+    Integer[] dad = parent2.getGenes();
+    /* Keep track of added cities */
+    int[] added = new int[DIMENSION];
+    Integer[] baby = new Integer[DIMENSION];
+    /* Select a subset from the first parent */
+    for(int i=begin; i<end; i++) {
+      baby[i] = mum[i];
+      added[baby[i]] = 1;
+    }
+    /* Set start point */
+    baby[0] = 0;
+    /* Get genes from the other parent */
+    int j =1;
+    for(int i=1; i<dad.length; i++) {
+      if(j == begin) {
+        j = end;
+      }
+      if(added[dad[i]] == 0) {
+        baby[j++] = dad[i];
+        added[dad[i]] = 1;
+      }
+    }
+    return new Chromosome(baby, getDistance(baby));
+  }
+
+  /*  Swap Mutation */
+  static Chromosome swapMutation(Chromosome x) {
+    Random random = new Random();
+    int a = random.nextInt(DIMENSION-1) + 1;
+    int b = random.nextInt(DIMENSION-1) + 1;
     Integer[] temp = x.getGenes();
     swapPosition(temp[a], temp[b], temp);
-    return new Chromosome(temp, getFitness(temp));
+    return new Chromosome(temp, getDistance(temp));
   }
 
   /**
@@ -181,28 +194,62 @@ public class Solution{
     Chromosome[] population = new Chromosome[n];
     for(int i=0 ; i<n; i++) {
       Integer[] temp = getPermutation();
-      population[i] = new Chromosome(temp, getFitness(temp));
+      population[i] = new Chromosome(temp, getDistance(temp));
     }
 
     Arrays.sort(population, new Comparator<Chromosome>() {
         @Override
         public int compare(Chromosome c1, Chromosome c2) {
-            return c1.getFitness().compareTo(c2.getFitness());
+            return c1.getDistance().compareTo(c2.getDistance());
         }
     });
 
     return population;
   }
-  //
-  // static Integer[][] getNextGeneration(Chromosome[] initial, int n) {
-  //   ArrayList<Chromosome> list = new ArrayList<Chromosome>();
-  //
-  // }
+
+  /**
+   * Get average fitness level.
+   */
+  static double getAvgFitness(Chromosome[] population) {
+    double sum = 0.0;
+    for(int i=0; i<population.length; i++) {
+      sum += population[i].getFitness();
+    }
+    return (double)sum/population.length;
+  }
+
+  /**
+   * Return fittest chromosome from the given population.
+   */
+  static Chromosome getFittest(Chromosome[] population) {
+    return population[0];
+  }
+
+  static Chromosome[] getNextGeneration(Chromosome[] initial, int n) {
+    List<Chromosome> list = new ArrayList<Chromosome>();
+    Random random = new Random();
+
+    /* Crossover */
+
+
+    /* Mutation */
+
+    return list.toArray(new Chromosome[list.size()]);
+  }
+
+  static double getAverageFitness(Chromosome[] population) {
+    double avg = 0.0;
+    for(Chromosome x : population) {
+      avg += x.getFitness();
+    }
+    return avg/population.length;
+  }
 
   public static void main(String[] args) {
-    int size = 1000;
+    int size = 25;
     Chromosome[] population = getInitialPopulation(size);
     for(Chromosome x: population) {
+      System.out.println(x.getDistance());
       System.out.println(x.getFitness());
       // System.out.println(Arrays.toString(x.getGenes()));
     }
