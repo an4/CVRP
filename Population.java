@@ -12,14 +12,14 @@ public class Population {
 
   public Population(int n) {
     this.population = getInitialPopulation(n);
-    this.avgDistance = getAvgDistance(this.population);
+    this.avgDistance = computeAverageDistance(this.population);
     this.minDistance = population[0].getDistance();
     this.maxDistance = population[n-1].getDistance();
   }
 
   public Population(Chromosome[] population) {
     this.population = population;
-    this.avgDistance = getAvgDistance(this.population);
+    this.avgDistance = computeAverageDistance(this.population);
     this.minDistance = population[0].getDistance();
     this.maxDistance = population[population.length-1].getDistance();
   }
@@ -45,7 +45,7 @@ public class Population {
   /**
    * Get average fitness level.
    */
-  public double getAvgDistance(Chromosome[] population) {
+  public double computeAverageDistance(Chromosome[] population) {
     double sum = 0.0;
     for(int i=0; i<population.length; i++) {
       sum += population[i].getFitness();

@@ -3,6 +3,8 @@ import java.util.*;
 public class Solution{
   final static int DIMENSION = Data.DIMENSION;
 
+  final static double MUTATION_RATE = 0.05;
+
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
     int pos2 = 0;
@@ -86,23 +88,62 @@ public class Solution{
     return new Chromosome(temp);
   }
 
-  static Chromosome[] getNextGeneration(Chromosome[] initial, int n) {
+  /* Check if mutation should be applied. */
+  static boolean shouldMutate() {
+    if(Math.random() < MUTATION_RATE) {
+      return true;
+    }
+    return false;
+  }
+
+  /*
+   * n - population size
+   * Generate k numbers between 0 and n and return the highest.
+   * Returns the position of the parent in the population array.
+   */
+  static int getParent(int n, int k) {
+    Random random = new Random();
+    int min = Integer.MAX_VALUE;
+    for(int i=0; i<k; i++) {
+      int r = random.nextInt(n-1);
+      if(r < min) {
+        min = r;
+      }
+    }
+    return min;
+  }
+
+  static Population getNextGeneration(Population population) {
+    Chromosome[] initial = population.getChromosomes();
+    int size = initial.length;
     List<Chromosome> list = new ArrayList<Chromosome>();
     Random random = new Random();
+    int k = 5;
 
     /* Crossover */
-
+    for(int i=0; i<size; i++) {
+      Chromosome parent1 = initial[getParent(size, k)];
+      Chromosome parent2 = initial[getParent(size, k)];
+      list.add(crossover(parent1, parent2));
+    }
 
     /* Mutation */
+    for(int i=0; i<size; i++) {
+      if(shouldMutate()) {
+        Chromosome mutated_chromosome = swapMutation(list.get(i));
+        list.set(i, mutated_chromosome);
+      }
+    }
 
-    return list.toArray(new Chromosome[list.size()]);
+    return new Population(list.toArray(new Chromosome[list.size()]));
   }
 
   public static void main(String[] args) {
-    int size = 25;
-    Population population = new Population(25);
-    for(Chromosome x: population.getChromosomes()) {
-      System.out.println(x.getDistance());
+    int size = 5000;
+    Population population = new Population(size);
+    for(int i=0; i<1000; i++) {
+      System.out.println(population.getMinDistance());
+      population = getNextGeneration(population);
     }
   }
 }
