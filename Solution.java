@@ -3,7 +3,7 @@ import java.util.*;
 public class Solution{
   final static int DIMENSION = Data.DIMENSION;
 
-  final static double MUTATION_RATE = 0.05;
+  final static double MUTATION_RATE = 0.015;
 
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
@@ -124,8 +124,17 @@ public class Solution{
     for(int i=0; i<size/2; i++) {
       Chromosome parent1 = initial[getParent(size, k)];
       Chromosome parent2 = initial[getParent(size, k)];
-      list.addAll(pmxCrossover(parent1, parent2));
+      Chromosome[] baby = pmxCrossover(parent1, parent2);
+      list.add(baby[0]);
+      list.add(baby[1]);
     }
+
+    // /* Crossover */
+    // for(int i=0; i<size/2; i++) {
+    //   Chromosome parent1 = initial[getParent(size, k)];
+    //   Chromosome parent2 = initial[getParent(size, k)];
+    //   list.add(crossover(parent1, parent2));
+    // }
 
     /* Mutation */
     for(int i=0; i<size; i++) {
