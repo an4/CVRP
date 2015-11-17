@@ -6,22 +6,25 @@ class Chromosome {
 
   private Integer[] genes = new Integer[DIMENSION];
   private Double distance = 0.0;
-  private Double fitness = 0.0;
+  private Double fitness = null;
 
   public Chromosome() {
     this.genes = getPermutation();
     this.distance = computeDistance(this.genes);
-    this.fitness = 1.0/this.distance;
   }
 
   public Chromosome(Integer[] genes) {
     this.genes = Arrays.copyOf(genes, genes.length);
     this.distance = computeDistance(genes);
-    this.fitness = 1.0/this.distance;
   }
 
+  /* Total distance of all chromosomes / distance of current chromosome */
   public Double getFitness() {
     return this.fitness;
+  }
+
+  public void setFitness(double fitness) {
+    this.fitness = fitness;
   }
 
   public Integer[] getGenes() {

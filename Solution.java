@@ -97,6 +97,7 @@ public class Solution{
   }
 
   /*
+   * Tournament selection
    * n - population size
    * Generate k numbers between 0 and n and return the highest.
    * Returns the position of the parent in the population array.

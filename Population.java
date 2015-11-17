@@ -10,18 +10,21 @@ public class Population {
 
   private double maxDistance = Double.MAX_VALUE;
 
-  public Population(int n) {
-    this.population = getInitialPopulation(n);
-    this.avgDistance = computeAverageDistance(this.population);
-    this.minDistance = population[0].getDistance();
-    this.maxDistance = population[n-1].getDistance();
-  }
-
   public Population(Chromosome[] population) {
     this.population = population;
     this.avgDistance = computeAverageDistance(this.population);
     this.minDistance = population[0].getDistance();
     this.maxDistance = population[population.length-1].getDistance();
+    /* Set fitness level for each chromosome */
+  }
+
+  public Population(int n) {
+    // this.population = getInitialPopulation(n);
+    // this.avgDistance = computeAverageDistance(this.population);
+    // this.minDistance = population[0].getDistance();
+    // this.maxDistance = population[n-1].getDistance();
+    this(getInitialPopulation(n));
+    /* Set fitness level for each chromosome */
   }
 
   /**
@@ -48,7 +51,7 @@ public class Population {
   public double computeAverageDistance(Chromosome[] population) {
     double sum = 0.0;
     for(int i=0; i<population.length; i++) {
-      sum += population[i].getFitness();
+      sum += population[i].getDistance();
     }
     return (double)sum/population.length;
   }
