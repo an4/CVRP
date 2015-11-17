@@ -121,10 +121,10 @@ public class Solution{
     int k = 5;
 
     /* Crossover */
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<size/2; i++) {
       Chromosome parent1 = initial[getParent(size, k)];
       Chromosome parent2 = initial[getParent(size, k)];
-      list.add(crossover(parent1, parent2));
+      list.addAll(pmxCrossover(parent1, parent2));
     }
 
     /* Mutation */
