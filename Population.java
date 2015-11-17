@@ -15,16 +15,11 @@ public class Population {
     this.avgDistance = computeAverageDistance(this.population);
     this.minDistance = population[0].getDistance();
     this.maxDistance = population[population.length-1].getDistance();
-    /* Set fitness level for each chromosome */
+    computeFitness(population);
   }
 
   public Population(int n) {
-    // this.population = getInitialPopulation(n);
-    // this.avgDistance = computeAverageDistance(this.population);
-    // this.minDistance = population[0].getDistance();
-    // this.maxDistance = population[n-1].getDistance();
     this(getInitialPopulation(n));
-    /* Set fitness level for each chromosome */
   }
 
   /**
@@ -43,6 +38,16 @@ public class Population {
         }
     });
     return population;
+  }
+
+  private static void computeFitness(Chromosome[] population) {
+    double total = 0.0;
+    for(int i=0; i<population.length; i++) {
+      total += population[i].getDistance();
+    }
+    for(int i=0; i<population.length; i++) {
+      population[i].setFitness(population[i].getDistance()/total);
+    }
   }
 
   /**
