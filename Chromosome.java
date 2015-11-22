@@ -7,6 +7,7 @@ class Chromosome {
   private Integer[] genes = new Integer[DIMENSION];
   private Double distance = 0.0;
   private Double fitness = null;
+  private Integer cells = 0;
 
   public Chromosome() {
     this.genes = getPermutation();
@@ -33,6 +34,14 @@ class Chromosome {
 
   public Double getDistance() {
     return this.distance;
+  }
+
+  public void setCells(int n) {
+    this.cells = n;
+  }
+
+  public Integer getCells() {
+    return this.cells;
   }
 
   static double computeDistance(Integer[] genes) {

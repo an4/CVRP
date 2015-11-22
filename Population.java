@@ -10,12 +10,36 @@ public class Population {
 
   private double maxDistance = Double.MAX_VALUE;
 
-  public Population(Chromosome[] population) {
+  private Integer[] roulette_wheel;
+
+  public Population(Chromosome[] larger_population, int size) {
+    Arrays.sort(larger_population, new Comparator<Chromosome>() {
+        @Override
+        public int compare(Chromosome c1, Chromosome c2) {
+            return c1.getDistance().compareTo(c2.getDistance());
+        }
+    });
+    Chromosome[] population = new Chromosome[size];
+    System.arraycopy(larger_population, 0, population, 0, size);
     this.population = population;
     this.avgDistance = computeAverageDistance(this.population);
     this.minDistance = population[0].getDistance();
     this.maxDistance = population[population.length-1].getDistance();
-    computeFitness(population);
+    this.computeFitness(population);
+  }
+
+  public Population(Chromosome[] population) {
+    Arrays.sort(population, new Comparator<Chromosome>() {
+        @Override
+        public int compare(Chromosome c1, Chromosome c2) {
+            return c1.getDistance().compareTo(c2.getDistance());
+        }
+    });
+    this.population = population;
+    this.avgDistance = computeAverageDistance(this.population);
+    this.minDistance = population[0].getDistance();
+    this.maxDistance = population[population.length-1].getDistance();
+    this.computeFitness(population);
   }
 
   public Population(int n) {
@@ -40,15 +64,46 @@ public class Population {
     return population;
   }
 
-  private static void computeFitness(Chromosome[] population) {
+  private void computeFitness(Chromosome[] population) {
     double total = 0.0;
+    double min = Double.MAX_VALUE;
+    double max = Double.MIN_VALUE;
     for(int i=0; i<population.length; i++) {
       total += population[i].getDistance();
     }
     for(int i=0; i<population.length; i++) {
-      population[i].setFitness(population[i].getDistance()/total);
+      population[i].setFitness(total / population[i].getDistance());
+      if(min > population[i].getFitness()) {
+        min = population[i].getFitness();
+      }
+      if(max < population[i].getFitness()) {
+        max = population[i].getFitness();
+      }
+    }
+    int total_cells = 0;
+    for(int i=0; i<population.length; i++) {
+      population[i].setFitness((population[i].getFitness() - min)/(max-min));
+      population[i].setCells((int)(population[i].getFitness() * population.length));
+      if(population[i].getCells() == 0) {
+        population[i].setCells(1);
+      }
+      total_cells += population[i].getCells();
+    }
+
+    this.roulette_wheel = new Integer[total_cells];
+    int k = 0;
+    for(int i=0; i<population.length; i++) {
+      for(int j=0; j<population[i].getCells(); j++) {
+        this.roulette_wheel[k++] = i;
+      }
     }
   }
+
+  // private void computeFitness(Chromosome[] population) {
+  //   for(int i=0; i<population.length; i++) {
+  //     population[i].setFitness(this.maxDistance+1 - population[i].getDistance());
+  //   }
+  // }
 
   /**
    * Get average fitness level.
@@ -75,5 +130,9 @@ public class Population {
 
   public double getMaxDistance() {
     return this.maxDistance;
+  }
+
+  public Integer[] getRouletteWheel() {
+    return this.roulette_wheel;
   }
 }

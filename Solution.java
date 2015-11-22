@@ -3,7 +3,7 @@ import java.util.*;
 public class Solution{
   final static int DIMENSION = Data.DIMENSION;
 
-  final static double MUTATION_RATE = 0.015;
+  final static double MUTATION_RATE = 0.05;
 
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
@@ -99,10 +99,10 @@ public class Solution{
   /*
    * Tournament selection
    * n - population size
-   * Generate k numbers between 0 and n and return the highest.
+   * Generate k numbers between 0 and n and return the lowest.
    * Returns the position of the parent in the population array.
    */
-  static int getParent(int n, int k) {
+  static int getParentTournament(int n, int k) {
     Random random = new Random();
     int min = Integer.MAX_VALUE;
     for(int i=0; i<k; i++) {
@@ -114,6 +114,15 @@ public class Solution{
     return min;
   }
 
+  /*
+   * Roulette Wheel selection
+   */
+  static int getParentRouletteWheel(Integer[] wheel) {
+    Random random = new Random();
+    int r = random.nextInt(wheel.length - 1);
+    return wheel[r];
+  }
+
   static Population getNextGeneration(Population population) {
     Chromosome[] initial = population.getChromosomes();
     int size = initial.length;
@@ -122,16 +131,21 @@ public class Solution{
     int k = 5;
 
     /* Crossover */
-    for(int i=0; i<size/2; i++) {
-      Chromosome parent1 = initial[getParent(size, k)];
-      Chromosome parent2 = initial[getParent(size, k)];
+    for(int i=0; i<size; i++) {
+      int p1 = getParentRouletteWheel(population.getRouletteWheel());
+      int p2 = getParentRouletteWheel(population.getRouletteWheel());
+      while(p1 == p2) {
+        p2 = getParentRouletteWheel(population.getRouletteWheel());
+      }
+      Chromosome parent1 = initial[p1];
+      Chromosome parent2 = initial[p2];
       Chromosome[] baby = pmxCrossover(parent1, parent2);
       list.add(baby[0]);
       list.add(baby[1]);
     }
 
     // /* Crossover */
-    // for(int i=0; i<size/2; i++) {
+    // for(int i=0; i<size; i++) {
     //   Chromosome parent1 = initial[getParent(size, k)];
     //   Chromosome parent2 = initial[getParent(size, k)];
     //   list.add(crossover(parent1, parent2));
@@ -145,15 +159,21 @@ public class Solution{
       }
     }
 
-    return new Population(list.toArray(new Chromosome[list.size()]));
+    return new Population(list.toArray(new Chromosome[2*size]), size);
   }
 
   public static void main(String[] args) {
-    int size = 5000;
+    int size = 3000;
     Population population = new Population(size);
+
+    // for(Chromosome x : population.getChromosomes()) {
+    //   System.out.println(x.getCells());
+    // }
+    System.out.println(population.getMinDistance());
     for(int i=0; i<1000; i++) {
       System.out.println(population.getMinDistance());
       population = getNextGeneration(population);
     }
+    System.out.println(population.getMinDistance());
   }
 }
