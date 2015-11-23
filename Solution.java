@@ -165,14 +165,14 @@ public class Solution{
   }
 
   public static void main(String[] args) {
-    int size = 4000;
+    int size = 500;
     Population population = new Population(size);
 
     // for(Chromosome x : population.getChromosomes()) {
     //   System.out.println(x.getCells());
     // }
     System.out.println(population.getMinDistance());
-    for(int i=0; i<2500; i++) {
+    for(int i=0; i<4000; i++) {
       // System.out.println(population.getMinDistance());
       population = getNextGeneration(population);
     }
