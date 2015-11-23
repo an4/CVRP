@@ -125,33 +125,61 @@ public class Solution{
     return wheel[r];
   }
 
-  static Population getNextGeneration(Population population) {
+  static Population getNextGeneration(Population population, int type) {
     Chromosome[] initial = population.getChromosomes();
     int size = initial.length;
     List<Chromosome> list = new ArrayList<Chromosome>();
     Random random = new Random();
     int k = 5;
 
-    /* Crossover */
-    for(int i=0; i<size; i++) {
-      int p1 = getParentRouletteWheel(population.getRouletteWheel());
-      int p2 = getParentRouletteWheel(population.getRouletteWheel());
-      while(p1 == p2) {
-        p2 = getParentRouletteWheel(population.getRouletteWheel());
+    if (type == 0) {
+      /* Crossover =  Roulette Wheel Selection + pmxCrossover */
+      for(int i=0; i<size; i++) {
+        int p1 = getParentRouletteWheel(population.getRouletteWheel());
+        int p2 = getParentRouletteWheel(population.getRouletteWheel());
+        while(p1 == p2) {
+          p2 = getParentRouletteWheel(population.getRouletteWheel());
+        }
+        Chromosome parent1 = initial[p1];
+        Chromosome parent2 = initial[p2];
+        Chromosome[] baby = pmxCrossover(parent1, parent2);
+        list.add(baby[0]);
+        list.add(baby[1]);
       }
-      Chromosome parent1 = initial[p1];
-      Chromosome parent2 = initial[p2];
-      Chromosome[] baby = pmxCrossover(parent1, parent2);
-      list.add(baby[0]);
-      list.add(baby[1]);
+    } else if (type == 1) {
+      /* Crossover =  Tournament Selection + pmxCrossover */
+      for(int i=0; i<size; i++) {
+        int p1 = getParentTournament(size, k);
+        int p2 = getParentTournament(size, k);
+        while(p1 == p2) {
+          p2 = getParentRouletteWheel(population.getRouletteWheel());
+        }
+        Chromosome parent1 = initial[p1];
+        Chromosome parent2 = initial[p2];
+        Chromosome[] baby = pmxCrossover(parent1, parent2);
+        list.add(baby[0]);
+        list.add(baby[1]);
+      }
+    } else if (type == 2) {
+      /* Crossover = Roulette Wheel Selection + Crossover */
+      for(int i=0; i<2*size; i++) {
+        int p1 = getParentRouletteWheel(population.getRouletteWheel());
+        int p2 = getParentRouletteWheel(population.getRouletteWheel());
+        while(p1 == p2) {
+          p2 = getParentRouletteWheel(population.getRouletteWheel());
+        }
+        Chromosome parent1 = initial[p1];
+        Chromosome parent2 = initial[p2];
+        list.add(crossover(parent1, parent2));
+      }
+    } else {
+      /* Crossover = Tournament Selection + Crossover */
+      for(int i=0; i<2*size; i++) {
+        Chromosome parent1 = initial[getParentTournament(size, k)];
+        Chromosome parent2 = initial[getParentTournament(size, k)];
+        list.add(crossover(parent1, parent2));
+      }
     }
-
-    // /* Crossover */
-    // for(int i=0; i<size; i++) {
-    //   Chromosome parent1 = initial[getParentTournament(size, k)];
-    //   Chromosome parent2 = initial[getParentTournament(size, k)];
-    //   list.add(crossover(parent1, parent2));
-    // }
 
     /* Mutation */
     for(int i=0; i<list.size(); i++) {
@@ -165,17 +193,37 @@ public class Solution{
   }
 
   public static void main(String[] args) {
-    int size = 500;
+    int size = 3000;
     Population population = new Population(size);
+    Population population0 = population;
+    Population population1 = population;
+    Population population2 = population;
+    Population population3 = population;
 
-    // for(Chromosome x : population.getChromosomes()) {
-    //   System.out.println(x.getCells());
-    // }
-    System.out.println(population.getMinDistance());
-    for(int i=0; i<4000; i++) {
+
+    System.out.println(population0.getMinDistance());
+    for(int i=0; i<2000; i++) {
       // System.out.println(population.getMinDistance());
-      population = getNextGeneration(population);
+      population0 = getNextGeneration(population0, 0);
     }
-    System.out.println(population.getMinDistance());
+    System.out.println(population0.getMinDistance());
+
+    for(int i=0; i<2000; i++) {
+      // System.out.println(population.getMinDistance());
+      population1 = getNextGeneration(population1, 1);
+    }
+    System.out.println(population1.getMinDistance());
+
+    for(int i=0; i<2000; i++) {
+      // System.out.println(population.getMinDistance());
+      population2 = getNextGeneration(population2, 2);
+    }
+    System.out.println(population2.getMinDistance());
+
+    for(int i=0; i<2000; i++) {
+      // System.out.println(population.getMinDistance());
+      population3 = getNextGeneration(population3, 3);
+    }
+    System.out.println(population3.getMinDistance());
   }
 }

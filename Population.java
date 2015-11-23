@@ -99,12 +99,6 @@ public class Population {
     }
   }
 
-  // private void computeFitness(Chromosome[] population) {
-  //   for(int i=0; i<population.length; i++) {
-  //     population[i].setFitness(this.maxDistance+1 - population[i].getDistance());
-  //   }
-  // }
-
   /**
    * Get average fitness level.
    */
