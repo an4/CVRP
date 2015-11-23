@@ -3,7 +3,7 @@ import java.util.*;
 public class Solution{
   final static int DIMENSION = Data.DIMENSION;
 
-  final static double MUTATION_RATE = 0.1;
+  final static double MUTATION_RATE = 0.05;
 
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
@@ -133,7 +133,7 @@ public class Solution{
     int k = 5;
 
     /* Crossover */
-    for(int i=0; i<2*size; i++) {
+    for(int i=0; i<size; i++) {
       int p1 = getParentRouletteWheel(population.getRouletteWheel());
       int p2 = getParentRouletteWheel(population.getRouletteWheel());
       while(p1 == p2) {
@@ -148,31 +148,31 @@ public class Solution{
 
     // /* Crossover */
     // for(int i=0; i<size; i++) {
-    //   Chromosome parent1 = initial[getParent(size, k)];
-    //   Chromosome parent2 = initial[getParent(size, k)];
+    //   Chromosome parent1 = initial[getParentTournament(size, k)];
+    //   Chromosome parent2 = initial[getParentTournament(size, k)];
     //   list.add(crossover(parent1, parent2));
     // }
 
     /* Mutation */
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<list.size(); i++) {
       if(shouldMutate()) {
         Chromosome mutated_chromosome = swapMutation(list.get(i));
         list.set(i, mutated_chromosome);
       }
     }
 
-    return new Population(list.toArray(new Chromosome[4*size]), size);
+    return new Population(list.toArray(new Chromosome[list.size()]), size);
   }
 
   public static void main(String[] args) {
-    int size = 1000;
+    int size = 4000;
     Population population = new Population(size);
 
     // for(Chromosome x : population.getChromosomes()) {
     //   System.out.println(x.getCells());
     // }
     System.out.println(population.getMinDistance());
-    for(int i=0; i<10000; i++) {
+    for(int i=0; i<2500; i++) {
       // System.out.println(population.getMinDistance());
       population = getNextGeneration(population);
     }
