@@ -193,7 +193,7 @@ public class Solution{
   }
 
   public static void main(String[] args) {
-    int size = 4000;
+    int size = 1000;
     Population population = new Population(size);
     Population population0 = population;
     Population population1 = population;
@@ -202,25 +202,25 @@ public class Solution{
 
 
     System.out.println(population0.getMinDistance());
-    for(int i=0; i<2000; i++) {
+    for(int i=0; i<1000; i++) {
       // System.out.println(population.getMinDistance());
       population0 = getNextGeneration(population0, 0);
     }
     System.out.println(population0.getMinDistance());
 
-    for(int i=0; i<2000; i++) {
+    for(int i=0; i<1000; i++) {
       // System.out.println(population.getMinDistance());
       population1 = getNextGeneration(population1, 1);
     }
     System.out.println(population1.getMinDistance());
 
-    for(int i=0; i<2000; i++) {
+    for(int i=0; i<1000; i++) {
       // System.out.println(population.getMinDistance());
       population2 = getNextGeneration(population2, 2);
     }
     System.out.println(population2.getMinDistance());
 
-    for(int i=0; i<2000; i++) {
+    for(int i=0; i<1000; i++) {
       // System.out.println(population.getMinDistance());
       population3 = getNextGeneration(population3, 3);
     }

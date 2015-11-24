@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class Population {
@@ -97,6 +98,7 @@ public class Population {
         this.roulette_wheel[k++] = i;
       }
     }
+    Collections.shuffle(Arrays.asList(this.roulette_wheel));
   }
 
   /**
