@@ -193,7 +193,7 @@ public class Solution{
   }
 
   public static void main(String[] args) {
-    int size = 3000;
+    int size = 4000;
     Population population = new Population(size);
     Population population0 = population;
     Population population1 = population;
