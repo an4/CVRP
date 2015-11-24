@@ -1,7 +1,10 @@
 import java.util.*;
+import java.io.PrintWriter;
 
 public class Solution{
   final static int DIMENSION = Data.DIMENSION;
+
+  final static int CAPACITY = Data.CAPACITY;
 
   final static double MUTATION_RATE = 0.05;
 
@@ -125,42 +128,40 @@ public class Solution{
     return wheel[r];
   }
 
-  static Population getNextGeneration(Population population, int type) {
+
+
+  static Population getNextGeneration(Population population) {
     Chromosome[] initial = population.getChromosomes();
     int size = initial.length;
     List<Chromosome> list = new ArrayList<Chromosome>();
     Random random = new Random();
     int k = 5;
 
-    if (type == 0) {
-      /* Crossover =  Roulette Wheel Selection + pmxCrossover */
-      for(int i=0; i<size; i++) {
-        int p1 = getParentRouletteWheel(population.getRouletteWheel());
-        int p2 = getParentRouletteWheel(population.getRouletteWheel());
-        while(p1 == p2) {
-          p2 = getParentRouletteWheel(population.getRouletteWheel());
-        }
-        Chromosome parent1 = initial[p1];
-        Chromosome parent2 = initial[p2];
-        Chromosome[] baby = pmxCrossover(parent1, parent2);
-        list.add(baby[0]);
-        list.add(baby[1]);
-      }
-    } else if (type == 1) {
-      /* Crossover =  Tournament Selection + pmxCrossover */
-      for(int i=0; i<size; i++) {
-        int p1 = getParentTournament(size, k);
-        int p2 = getParentTournament(size, k);
-        while(p1 == p2) {
-          p2 = getParentRouletteWheel(population.getRouletteWheel());
-        }
-        Chromosome parent1 = initial[p1];
-        Chromosome parent2 = initial[p2];
-        Chromosome[] baby = pmxCrossover(parent1, parent2);
-        list.add(baby[0]);
-        list.add(baby[1]);
-      }
-    } else if (type == 2) {
+      // /* Crossover =  Roulette Wheel Selection + pmxCrossover */
+      // for(int i=0; i<size; i++) {
+      //   int p1 = getParentRouletteWheel(population.getRouletteWheel());
+      //   int p2 = getParentRouletteWheel(population.getRouletteWheel());
+      //   while(p1 == p2) {
+      //     p2 = getParentRouletteWheel(population.getRouletteWheel());
+      //   }
+      //   Chromosome parent1 = initial[p1];
+      //   Chromosome parent2 = initial[p2];
+      //   Chromosome[] baby = pmxCrossover(parent1, parent2);
+      //   list.add(baby[0]);
+      //   list.add(baby[1]);
+      // }
+      //
+      // /* Crossover =  Tournament Selection + pmxCrossover */
+      // for(int i=0; i<size; i++) {
+      //   int p1 = getParentTournament(size, k);
+      //   int p2 = getParentTournament(size, k);
+      //   Chromosome parent1 = initial[p1];
+      //   Chromosome parent2 = initial[p2];
+      //   Chromosome[] baby = pmxCrossover(parent1, parent2);
+      //   list.add(baby[0]);
+      //   list.add(baby[1]);
+      // }
+
       /* Crossover = Roulette Wheel Selection + Crossover */
       for(int i=0; i<2*size; i++) {
         int p1 = getParentRouletteWheel(population.getRouletteWheel());
@@ -172,14 +173,14 @@ public class Solution{
         Chromosome parent2 = initial[p2];
         list.add(crossover(parent1, parent2));
       }
-    } else {
-      /* Crossover = Tournament Selection + Crossover */
-      for(int i=0; i<2*size; i++) {
-        Chromosome parent1 = initial[getParentTournament(size, k)];
-        Chromosome parent2 = initial[getParentTournament(size, k)];
-        list.add(crossover(parent1, parent2));
-      }
-    }
+
+      // /* Crossover = Tournament Selection + Crossover */
+      // for(int i=0; i<2*size; i++) {
+      //   Chromosome parent1 = initial[getParentTournament(size, k)];
+      //   Chromosome parent2 = initial[getParentTournament(size, k)];
+      //   list.add(crossover(parent1, parent2));
+      // }
+
 
     /* Mutation */
     for(int i=0; i<list.size(); i++) {
@@ -192,41 +193,64 @@ public class Solution{
     return new Population(list.toArray(new Chromosome[list.size()]), size);
   }
 
+  public static void getSimpleSolution(Population population) {
+    Integer[] best_route = population.getChromosomes()[0].getGenes();
+    int vehicles = 1;
+    int capacity = CAPACITY;
+    double cost = 0;
+    StringBuilder br = new StringBuilder();
+    br.append("1->");
+    int i=0;
+    for(i=1; i<DIMENSION; i++) {
+      if(capacity - Data.demand[best_route[i]] > 0) {
+        capacity -= Data.demand[best_route[i]];
+        cost += Data.EDM[best_route[i]][best_route[i-1]];
+        br.append((best_route[i]+1) + "->");
+      } else {
+        capacity = CAPACITY - Data.demand[best_route[i]];
+        vehicles++;
+        cost += Data.EDM[best_route[i-1]][0];
+        cost += Data.EDM[0][best_route[i]];
+        br.append("1\n");
+        br.append("1->" + (best_route[i]+1) + "->");
+      }
+    }
+    cost += Data.EDM[best_route[i-1]][0];
+    br.append("1");
+
+    try {
+      PrintWriter file = new PrintWriter("best-solution.txt", "UTF-8");
+      file.println("login ad12461 52610");
+      file.println("name Ana Dumitras");
+      file.println("algorithm Genetic Algorithm with crossover and mutation");
+
+      file.println("cost " + cost);
+      file.println(br.toString());
+      file.close();
+
+      System.out.println("C: " + cost);
+    }
+    catch (Exception ex)
+    {
+
+    }
+  }
+
   public static void main(String[] args) {
-    int size = 3000;
-    int rounds = 4500;
+    int size = 4000;
+    int rounds = 5000;
 
     Population population = new Population(size);
-    Population population0 = population;
-    Population population1 = population;
-    Population population2 = population;
-    Population population3 = population;
 
-
-    System.out.println(population0.getMinDistance());
-
-    // for(int i=0; i<rounds; i++) {
-    //   // System.out.println(population0.getMinDistance());
-    //   population0 = getNextGeneration(population0, 0);
-    // }
-    // System.out.println(population0.getMinDistance());
-    //
-    // for(int i=0; i<rounds; i++) {
-    //   // System.out.println(population1.getMinDistance());
-    //   population1 = getNextGeneration(population1, 1);
-    // }
-    // System.out.println(population1.getMinDistance());
+    System.out.println(population.getMinDistance());
 
     for(int i=0; i<rounds; i++) {
-      // System.out.println(population2.getMinDistance());
-      population2 = getNextGeneration(population2, 2);
+      // System.out.println(population.getMinDistance());
+      population = getNextGeneration(population);
     }
-    System.out.println(population2.getMinDistance());
+    System.out.println(population.getMinDistance());
 
-    for(int i=0; i<rounds; i++) {
-      // System.out.println(population3.getMinDistance());
-      population3 = getNextGeneration(population3, 3);
-    }
-    System.out.println(population3.getMinDistance());
+    getSimpleSolution(population);
+
   }
 }
