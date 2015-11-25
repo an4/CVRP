@@ -236,9 +236,33 @@ public class Solution{
     }
   }
 
+  public static Integer[] hillCLimbing(Integer[] genes) {
+    Random random = new Random();
+    int city = random.nextInt(DIMENSION - 1) + 1;
+    double distance = Chromosome.computeDistance(genes);
+    Integer[] fittest = Arrays.copyOf(genes, genes.length);;
+
+    for(int i=1; i<DIMENSION; i++) {
+      if(city == genes[i]) {
+        continue;
+      }
+      Integer[] current = Arrays.copyOf(genes, genes.length);;
+      swapPosition(city, genes[i], current);
+      double new_distance = Chromosome.computeDistance(current);
+      if(new_distance < distance) {
+        System.out.println(new_distance + " < " + distance);
+        distance = new_distance;
+        fittest = Arrays.copyOf(current, current.length);
+      }
+    }
+
+    System.out.println("HC: " + distance);
+    return fittest;
+  }
+
   public static void main(String[] args) {
-    int size = 4000;
-    int rounds = 5000;
+    int size = 2000;
+    int rounds = 3000;
 
     Population population = new Population(size);
 
@@ -250,7 +274,11 @@ public class Solution{
     }
     System.out.println(population.getMinDistance());
 
-    getSimpleSolution(population);
+    Integer[] solution = hillCLimbing(population.getChromosomes()[0].getGenes());
+    for(int i=0; i<10; i++) {
+      solution = hillCLimbing(solution);
+    }
+    // getSimpleSolution(population);
 
   }
 }
