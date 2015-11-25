@@ -52,6 +52,24 @@ class Chromosome {
     return distance + Data.EDM[genes[genes.length-1]][0];
   }
 
+  // static double computeDistance(Integer[] genes) {
+  //   int i=0;
+  //   int capacity = Data.CAPACITY;
+  //   double cost = 0.0;
+  //   for(i=1; i<DIMENSION; i++) {
+  //     if(capacity - Data.demand[genes[i]] > 0) {
+  //       capacity -= Data.demand[genes[i]];
+  //       cost += Data.EDM[genes[i]][genes[i-1]];
+  //     } else {
+  //       capacity = Data.CAPACITY - Data.demand[genes[i]];
+  //       cost += Data.EDM[genes[i-1]][0];
+  //       cost += Data.EDM[0][genes[i]];
+  //     }
+  //   }
+  //   cost += Data.EDM[genes[i-1]][0];
+  //   return cost;
+  // }
+
   static Integer[] getPermutation() {
     Integer[] array = new Integer[DIMENSION];
     for(int i=0; i<DIMENSION; i++) {

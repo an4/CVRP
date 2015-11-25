@@ -230,12 +230,9 @@ public class Solution{
     return cost;
   }
 
-  public static Integer[] hillClimbing(Integer[] genes) {
-    double distance = Chromosome.computeDistance(genes);
+  public static Integer[] chooseNextNeighbourSAHC(Integer[] genes) {
     Integer[] fittest = Arrays.copyOf(genes, genes.length);
-
     double cost = getSimpleCost(genes);
-
     for(int i=1; i<DIMENSION-1; i++) {
       for(int j=i+1; j<DIMENSION; j++) {
         Integer[] current = Arrays.copyOf(genes, genes.length);;
@@ -247,33 +244,111 @@ public class Solution{
         }
       }
     }
-    System.out.println("HC: " + cost);
+    System.out.println(cost);
     return fittest;
+  }
+
+  public static Integer[] steepestAscentHillClimbing(Integer[] genes) {
+    double cost = getSimpleCost(genes);
+    double last_cost = 0.0;
+    Integer[] next = null;
+    while(last_cost != cost) {
+      last_cost = cost;
+      next = chooseNextNeighbourSAHC(genes);
+      cost = getSimpleCost(next);
+    }
+    System.out.println("SAHC: " + cost);
+    return next;
+  }
+
+  public static Integer[] chooseNextNeighbourSHC(Integer[] genes) {
+    double cost = getSimpleCost(genes);
+    for(int i=1; i<DIMENSION-1; i++) {
+      for(int j=i+1; j<DIMENSION; j++) {
+        Integer[] current = Arrays.copyOf(genes, genes.length);;
+        swapPosition(genes[i], genes[j], current);
+        double new_cost = getSimpleCost(current);
+        if(new_cost < cost) {
+          return current;
+        }
+      }
+    }
+    return genes;
+  }
+
+  public static Integer[] simpleHillClimbing(Integer[] genes) {
+    double cost = getSimpleCost(genes);
+    double last_cost = 0.0;
+    Integer[] next = null;
+    while(last_cost != cost) {
+      last_cost = cost;
+      next = chooseNextNeighbourSHC(genes);
+      cost = getSimpleCost(next);
+    }
+    System.out.println("SHC: " + cost);
+    return next;
+  }
+
+  public static double getRandomCost(ArrayList<Integer> route) {
+    double distance = 0.0;
+    for(int i=1; i<route.size(); i++) {
+      distance += Data.EDM[route.get(i-1)][route.get(i)];
+    }
+    return distance;
+  }
+
+  public static boolean isRouteValid(ArrayList<Integer> route) {
+    int cost = 0;
+    for(Integer x: route) {
+      if(x == 0) {
+        if(cost + Data.demand[x] > CAPACITY) {
+          return false;
+        }
+        cost = 0;
+      } else {
+        cost += Data.demand[x];
+      }
+      if(cost >  CAPACITY) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public static void randomTrucks(Integer[] genes) {
+    ArrayList<Integer> routes = new ArrayList<Integer>(Arrays.asList(genes));
+    Random random = new Random();
+    while(!isRouteValid(routes)) {
+      int stop = random.nextInt(routes.size()-1) + 1;
+      routes.add(stop, 0);
+    }
+    System.out.println("R: " + getRandomCost(routes));
   }
 
   public static void main(String[] args) {
     int size = 2000;
-    int rounds = 4000;
+    int generations = 4000;
+    int GA_rounds = 10;
     int hc = 100;
 
-    Population population = new Population(size);
-    Population test = population;
-    Population test1 = population;
+    Population best_population = null;
+    double cost = Double.MAX_VALUE;
 
-    System.out.println(population.getMinDistance());
-
-    for(int i=0; i<rounds; i++) {
+    for(int i=0; i<GA_rounds; i++) {
+      Population population = new Population(size);
+      for(int j=0; j<generations; j++) {
+        // System.out.println(population.getMinDistance());
+        population = getNextGeneration(population);
+      }
       // System.out.println(population.getMinDistance());
-      population = getNextGeneration(population);
+      if(population.getMinDistance() < cost) {
+        cost = population.getMinDistance();
+        best_population = population;
+      }
     }
-    System.out.println(population.getMinDistance());
+    System.out.println(best_population.getMinDistance());
+    getSimpleSolution(best_population);
 
-    getSimpleSolution(population);
-
-    Integer[] genes = population.getChromosomes()[0].getGenes();
-    for(int i=0; i<hc; i++) {
-      genes = hillClimbing(genes);
-    }
-
+    // randomTrucks(genes);
   }
 }
