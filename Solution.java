@@ -252,7 +252,7 @@ public class Solution{
   }
 
   public static void main(String[] args) {
-    int size = 2500;
+    int size = 2000;
     int rounds = 4000;
     int hc = 100;
 
