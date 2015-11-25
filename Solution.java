@@ -212,32 +212,49 @@ public class Solution{
     }
   }
 
-  public static Integer[] hillCLimbing(Integer[] genes) {
-    Random random = new Random();
-    // int city = random.nextInt(DIMENSION - 1) + 1;
-    double distance = Chromosome.computeDistance(genes);
-    Integer[] fittest = Arrays.copyOf(genes, genes.length);;
+  public static double getSimpleCost(Integer[] genes) {
+    int i=0;
+    int capacity = CAPACITY;
+    double cost = 0.0;
+    for(i=1; i<DIMENSION; i++) {
+      if(capacity - Data.demand[genes[i]] > 0) {
+        capacity -= Data.demand[genes[i]];
+        cost += Data.EDM[genes[i]][genes[i-1]];
+      } else {
+        capacity = CAPACITY - Data.demand[genes[i]];
+        cost += Data.EDM[genes[i-1]][0];
+        cost += Data.EDM[0][genes[i]];
+      }
+    }
+    cost += Data.EDM[genes[i-1]][0];
+    return cost;
+  }
 
-    for(int i=1; i<DIMENSION; i++) {
+  public static Integer[] hillClimbing(Integer[] genes) {
+    double distance = Chromosome.computeDistance(genes);
+    Integer[] fittest = Arrays.copyOf(genes, genes.length);
+
+    double cost = getSimpleCost(genes);
+
+    for(int i=1; i<DIMENSION-1; i++) {
       for(int j=i+1; j<DIMENSION; j++) {
         Integer[] current = Arrays.copyOf(genes, genes.length);;
         swapPosition(genes[i], genes[j], current);
-        double new_distance = Chromosome.computeDistance(current);
-        if(new_distance < distance) {
-          System.out.println(new_distance + " < " + distance);
-          distance = new_distance;
+        double new_cost = getSimpleCost(current);
+        if(new_cost < cost) {
+          cost = new_cost;
           fittest = Arrays.copyOf(current, current.length);
         }
       }
     }
-
-    System.out.println("HC: " + distance);
+    System.out.println("HC: " + cost);
     return fittest;
   }
 
   public static void main(String[] args) {
-    int size = 2000;
+    int size = 2500;
     int rounds = 4000;
+    int hc = 100;
 
     Population population = new Population(size);
     Population test = population;
@@ -251,12 +268,12 @@ public class Solution{
     }
     System.out.println(population.getMinDistance());
 
-    // Integer[] solution = hillCLimbing(population.getChromosomes()[0].getGenes());
-    // for(int i=0; i<10; i++) {
-    //   solution = hillCLimbing(solution);
-    // }
-
     getSimpleSolution(population);
+
+    Integer[] genes = population.getChromosomes()[0].getGenes();
+    for(int i=0; i<hc; i++) {
+      genes = hillClimbing(genes);
+    }
 
   }
 }
