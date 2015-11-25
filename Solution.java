@@ -214,21 +214,20 @@ public class Solution{
 
   public static Integer[] hillCLimbing(Integer[] genes) {
     Random random = new Random();
-    int city = random.nextInt(DIMENSION - 1) + 1;
+    // int city = random.nextInt(DIMENSION - 1) + 1;
     double distance = Chromosome.computeDistance(genes);
     Integer[] fittest = Arrays.copyOf(genes, genes.length);;
 
     for(int i=1; i<DIMENSION; i++) {
-      if(city == genes[i]) {
-        continue;
-      }
-      Integer[] current = Arrays.copyOf(genes, genes.length);;
-      swapPosition(city, genes[i], current);
-      double new_distance = Chromosome.computeDistance(current);
-      if(new_distance < distance) {
-        System.out.println(new_distance + " < " + distance);
-        distance = new_distance;
-        fittest = Arrays.copyOf(current, current.length);
+      for(int j=i+1; j<DIMENSION; j++) {
+        Integer[] current = Arrays.copyOf(genes, genes.length);;
+        swapPosition(genes[i], genes[j], current);
+        double new_distance = Chromosome.computeDistance(current);
+        if(new_distance < distance) {
+          System.out.println(new_distance + " < " + distance);
+          distance = new_distance;
+          fittest = Arrays.copyOf(current, current.length);
+        }
       }
     }
 
@@ -238,9 +237,11 @@ public class Solution{
 
   public static void main(String[] args) {
     int size = 2000;
-    int rounds = 3000;
+    int rounds = 4000;
 
     Population population = new Population(size);
+    Population test = population;
+    Population test1 = population;
 
     System.out.println(population.getMinDistance());
 
@@ -250,11 +251,12 @@ public class Solution{
     }
     System.out.println(population.getMinDistance());
 
-    Integer[] solution = hillCLimbing(population.getChromosomes()[0].getGenes());
-    for(int i=0; i<10; i++) {
-      solution = hillCLimbing(solution);
-    }
-    // getSimpleSolution(population);
+    // Integer[] solution = hillCLimbing(population.getChromosomes()[0].getGenes());
+    // for(int i=0; i<10; i++) {
+    //   solution = hillCLimbing(solution);
+    // }
+
+    getSimpleSolution(population);
 
   }
 }
