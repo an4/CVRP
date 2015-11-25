@@ -124,11 +124,9 @@ public class Solution{
    */
   static int getParentRouletteWheel(Integer[] wheel) {
     Random random = new Random();
-    int r = random.nextInt(wheel.length - 1);
-    return wheel[r];
+    int random_index = random.nextInt(wheel.length - 1);
+    return wheel[random_index];
   }
-
-
 
   static Population getNextGeneration(Population population) {
     Chromosome[] initial = population.getChromosomes();
@@ -137,50 +135,24 @@ public class Solution{
     Random random = new Random();
     int k = 5;
 
-      // /* Crossover =  Roulette Wheel Selection + pmxCrossover */
-      // for(int i=0; i<size; i++) {
-      //   int p1 = getParentRouletteWheel(population.getRouletteWheel());
-      //   int p2 = getParentRouletteWheel(population.getRouletteWheel());
-      //   while(p1 == p2) {
-      //     p2 = getParentRouletteWheel(population.getRouletteWheel());
-      //   }
-      //   Chromosome parent1 = initial[p1];
-      //   Chromosome parent2 = initial[p2];
-      //   Chromosome[] baby = pmxCrossover(parent1, parent2);
-      //   list.add(baby[0]);
-      //   list.add(baby[1]);
-      // }
-      //
-      // /* Crossover =  Tournament Selection + pmxCrossover */
-      // for(int i=0; i<size; i++) {
-      //   int p1 = getParentTournament(size, k);
-      //   int p2 = getParentTournament(size, k);
-      //   Chromosome parent1 = initial[p1];
-      //   Chromosome parent2 = initial[p2];
-      //   Chromosome[] baby = pmxCrossover(parent1, parent2);
-      //   list.add(baby[0]);
-      //   list.add(baby[1]);
-      // }
-
-      /* Crossover = Roulette Wheel Selection + Crossover */
-      for(int i=0; i<2*size; i++) {
-        int p1 = getParentRouletteWheel(population.getRouletteWheel());
-        int p2 = getParentRouletteWheel(population.getRouletteWheel());
-        while(p1 == p2) {
-          p2 = getParentRouletteWheel(population.getRouletteWheel());
-        }
-        Chromosome parent1 = initial[p1];
-        Chromosome parent2 = initial[p2];
-        list.add(crossover(parent1, parent2));
+    /* Crossover = Roulette Wheel Selection + Crossover */
+    for(int i=0; i<2*size; i++) {
+      int p1 = getParentRouletteWheel(population.getRouletteWheel());
+      int p2 = getParentRouletteWheel(population.getRouletteWheel());
+      while(p1 == p2) {
+        p2 = getParentRouletteWheel(population.getRouletteWheel());
       }
+      Chromosome parent1 = initial[p1];
+      Chromosome parent2 = initial[p2];
+      list.add(crossover(parent1, parent2));
+    }
 
-      // /* Crossover = Tournament Selection + Crossover */
-      // for(int i=0; i<2*size; i++) {
-      //   Chromosome parent1 = initial[getParentTournament(size, k)];
-      //   Chromosome parent2 = initial[getParentTournament(size, k)];
-      //   list.add(crossover(parent1, parent2));
-      // }
-
+    // /* Crossover = Tournament Selection + Crossover */
+    // for(int i=0; i<2*size; i++) {
+    //   Chromosome parent1 = initial[getParentTournament(size, k)];
+    //   Chromosome parent2 = initial[getParentTournament(size, k)];
+    //   list.add(crossover(parent1, parent2));
+    // }
 
     /* Mutation */
     for(int i=0; i<list.size(); i++) {
@@ -218,6 +190,12 @@ public class Solution{
     cost += Data.EDM[best_route[i-1]][0];
     br.append("1");
 
+    printSolution(br.toString(), cost);
+
+    System.out.println("C: " + cost);
+  }
+
+  public static void printSolution(String routes, Double cost) {
     try {
       PrintWriter file = new PrintWriter("best-solution.txt", "UTF-8");
       file.println("login ad12461 52610");
@@ -225,14 +203,12 @@ public class Solution{
       file.println("algorithm Genetic Algorithm with crossover and mutation");
 
       file.println("cost " + cost);
-      file.println(br.toString());
+      file.println(routes);
       file.close();
-
-      System.out.println("C: " + cost);
     }
     catch (Exception ex)
     {
-
+      System.out.println("3rr0r");
     }
   }
 
