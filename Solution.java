@@ -138,83 +138,6 @@ public class Solution{
     }
   }
 
-  public static double getSimpleCost(Integer[] genes) {
-    int i=0;
-    int capacity = CAPACITY;
-    double cost = 0.0;
-    for(i=1; i<DIMENSION; i++) {
-      if(capacity - Data.demand[genes[i]] > 0) {
-        capacity -= Data.demand[genes[i]];
-        cost += Data.EDM[genes[i]][genes[i-1]];
-      } else {
-        capacity = CAPACITY - Data.demand[genes[i]];
-        cost += Data.EDM[genes[i-1]][0];
-        cost += Data.EDM[0][genes[i]];
-      }
-    }
-    cost += Data.EDM[genes[i-1]][0];
-    return cost;
-  }
-
-  public static Integer[] chooseNextNeighbourSAHC(Integer[] genes) {
-    Integer[] fittest = Arrays.copyOf(genes, genes.length);
-    double cost = getSimpleCost(genes);
-    for(int i=1; i<DIMENSION-1; i++) {
-      for(int j=i+1; j<DIMENSION; j++) {
-        Integer[] current = Arrays.copyOf(genes, genes.length);;
-        SimpleGA.swapPosition(genes[i], genes[j], current);
-        double new_cost = getSimpleCost(current);
-        if(new_cost < cost) {
-          cost = new_cost;
-          fittest = Arrays.copyOf(current, current.length);
-        }
-      }
-    }
-    System.out.println(cost);
-    return fittest;
-  }
-
-  public static Integer[] steepestAscentHillClimbing(Integer[] genes) {
-    double cost = getSimpleCost(genes);
-    double last_cost = 0.0;
-    Integer[] next = null;
-    while(last_cost != cost) {
-      last_cost = cost;
-      next = chooseNextNeighbourSAHC(genes);
-      cost = getSimpleCost(next);
-    }
-    System.out.println("SAHC: " + cost);
-    return next;
-  }
-
-  public static Integer[] chooseNextNeighbourSHC(Integer[] genes) {
-    double cost = getSimpleCost(genes);
-    for(int i=1; i<DIMENSION-1; i++) {
-      for(int j=i+1; j<DIMENSION; j++) {
-        Integer[] current = Arrays.copyOf(genes, genes.length);;
-        SimpleGA.swapPosition(genes[i], genes[j], current);
-        double new_cost = getSimpleCost(current);
-        if(new_cost < cost) {
-          return current;
-        }
-      }
-    }
-    return genes;
-  }
-
-  public static Integer[] simpleHillClimbing(Integer[] genes) {
-    double cost = getSimpleCost(genes);
-    double last_cost = 0.0;
-    Integer[] next = null;
-    while(last_cost != cost) {
-      last_cost = cost;
-      next = chooseNextNeighbourSHC(genes);
-      cost = getSimpleCost(next);
-    }
-    System.out.println("SHC: " + cost);
-    return next;
-  }
-
 /******************************************************************************/
   public static double getSmallRouteCost(ArrayList<Integer> route) {
     double cost = 0.0;
@@ -320,8 +243,15 @@ public class Solution{
     // getSimpleSolution(best_genes);
     //
     // // randomIntervalSolution(best_population);
+
+
     Population population = SimpleGA.runGA();
 
-    getSimpleSolution(population.getChromosomes()[0].getGenes());
+    // HillClimber.runHC();
+
+    //
+    // getSimpleSolution(population.getChromosomes()[0].getGenes());
+
+    // Population population = HillClimber.getPopulationOfLocalPeaks(100);
   }
 }
