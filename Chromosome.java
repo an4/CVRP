@@ -44,7 +44,7 @@ class Chromosome {
     return this.cells;
   }
 
-  static double computeDistance(Integer[] genes) {
+  public static double computeDistance(Integer[] genes) {
     double distance = 0.0;
     for(int i=1; i<genes.length; i++) {
       distance += Data.EDM[genes[i]][genes[i-1]];
@@ -77,7 +77,7 @@ class Chromosome {
     }
     Collections.shuffle(Arrays.asList(array));
     if(array[0] != 0) {
-      Solution.swapPosition(0, array[0], array);
+      SimpleGA.swapPosition(0, array[0], array);
     }
     return array;
   }
