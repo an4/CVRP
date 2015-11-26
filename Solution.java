@@ -215,17 +215,15 @@ public class Solution{
   public static void randomIntervalSolution(Population population) {
     Random random = new Random();
     Integer[] best_route = population.getChromosomes()[0].getGenes();
-    StringBuilder br = new StringBuilder();
-
     ArrayList<ArrayList<Integer>> best_routes = null;
     double best_cost = Double.MAX_VALUE;
 
-    for(int round=0; round<50; round++) {
+    for(int round=0; round<500; round++) {
       ArrayList<ArrayList<Integer>> routes = new ArrayList<ArrayList<Integer>>();
       int capacity = CAPACITY;
       double cost = 0.0;
       int i=0;
-      int last = 0;
+      int last = 1;
       for(i=1; i<DIMENSION; i++) {
         if(capacity - Data.demand[best_route[i]] > 0) {
           capacity -= Data.demand[best_route[i]];
@@ -242,6 +240,7 @@ public class Solution{
           routes.add(route);
 
           last = rand;
+          i = rand;
           capacity = CAPACITY - Data.demand[best_route[i]];
         }
       }
@@ -260,7 +259,23 @@ public class Solution{
       }
     }
 
-    // printSolution(br.toString(), cost);
+    StringBuilder br = new StringBuilder();
+    for(int i=0; i<best_routes.size(); i++) {
+      boolean start = true;
+      for(Integer x : best_routes.get(i)) {
+        if(start) {
+          br.append(x+1);
+          start = false;
+        } else {
+          br.append("->" + (x+1));
+        }
+      }
+      if(i < best_routes.size() - 1) {
+        br.append("\n");
+      }
+    }
+
+    printSolution(br.toString(), best_cost);
     System.out.println("Rand: " + best_cost);
   }
 
@@ -457,6 +472,6 @@ public class Solution{
 
     getSimpleSolution(best_population);
 
-    randomIntervalSolution(best_population);
+    // randomIntervalSolution(best_population);
   }
 }
