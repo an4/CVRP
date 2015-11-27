@@ -302,7 +302,6 @@ public class SimpleGA {
           break;
         }
       }
-      System.out.println(population.getMinDistance());
       if(population.getMinDistance() < cost) {
         cost = population.getMinDistance();
         best = population;
@@ -322,7 +321,7 @@ public class SimpleGA {
     //     best = population;
     //   }
     // }
-    
+
     return best.getChromosomes()[0].getGenes();
   }
 }
