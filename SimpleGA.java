@@ -249,9 +249,14 @@ public class SimpleGA {
       }
     }
 
-    for(Chromosome x: initial) {
-      list.add(x);
-    }
+    // int count = 0;
+    // for(Chromosome x: initial) {
+    //   if(count >= 100) {
+    //     break;
+    //   }
+    //   list.add(x);
+    //   count++;
+    // }
 
     return new Population(list.toArray(new Chromosome[list.size()]), size);
   }
@@ -286,22 +291,22 @@ public class SimpleGA {
       }
     }
 
-    int count = 0;
-    for(Chromosome x: initial) {
-      if(count >= 100) {
-        break;
-      }
-      list.add(x);
-      count++;
-    }
+    // int count = 0;
+    // for(Chromosome x: initial) {
+    //   if(count >= 100) {
+    //     break;
+    //   }
+    //   list.add(x);
+    //   count++;
+    // }
 
     return new Population(list.toArray(new Chromosome[list.size()]), size);
   }
 
   /* */
   public static Integer[] runGA() {
-    int size = 2000;
-    int generations = 5000;
+    int size = 6000;
+    int generations = 10000;
     int GA_rounds = 1;
 
     Population best = null;
@@ -314,7 +319,7 @@ public class SimpleGA {
       int similar = 0;
       double last_cost = population.getMinDistance();
       for(int j=0; j<generations; j++) {
-        // System.out.println(population.getMinDistance());
+        System.out.println(population.getMinDistance());
         population = getNextGenerationRW(population);
         if(last_cost == population.getMinDistance()) {
           similar++;
