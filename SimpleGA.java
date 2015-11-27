@@ -193,7 +193,7 @@ public class SimpleGA {
     List<Chromosome> list = new ArrayList<Chromosome>();
 
     /* Crossover = Roulette Wheel Selection + Crossover */
-    for(int i=0; i<4*size; i++) {
+    for(int i=0; i<size; i++) {
       int p1 = getParentRouletteWheel(population.getRouletteWheel());
       int p2 = getParentRouletteWheel(population.getRouletteWheel());
       while(p1 == p2) {
@@ -203,10 +203,11 @@ public class SimpleGA {
       Chromosome parent2 = initial[p2];
 
       list.add(orderedCrossover(parent1, parent2));
+      list.add(crossover(parent1, parent2));
 
-      // Chromosome[] babies = pmxCrossover(parent1, parent2);
-      // list.add(babies[0]);
-      // list.add(babies[1]);
+      Chromosome[] babies = pmxCrossover(parent1, parent2);
+      list.add(babies[0]);
+      list.add(babies[1]);
     }
 
     /* Mutation */
@@ -244,7 +245,7 @@ public class SimpleGA {
     for(int i=0; i<size; i++) {
       Chromosome parent1 = initial[getParentTournament(size, k)];
       Chromosome parent2 = initial[getParentTournament(size, k)];
-      list.add(reorderCrossover(parent1, parent2));
+      list.add(crossover(parent1, parent2));
 
       // Chromosome[] babies = pmxCrossover(parent1, parent2);
       // list.add(babies[0]);
@@ -278,7 +279,7 @@ public class SimpleGA {
   /* */
   public static Integer[] runGA() {
     int size = 3000;
-    int generations = 1500;
+    int generations = 2000;
     int GA_rounds = 5;
 
     Population best = null;
@@ -290,7 +291,7 @@ public class SimpleGA {
       int similar = 0;
       double last_cost = population.getMinDistance();
       for(int j=0; j<generations; j++) {
-        // System.out.println(j + "\t: " + population.getMinDistance());
+        System.out.println(j + "\t: " + population.getMinDistance());
         population = getNextGenerationRW(population);
         if(last_cost == population.getMinDistance()) {
           similar++;
