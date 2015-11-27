@@ -138,20 +138,15 @@ public class HillClimber {
         new_cost = getSimpleCVRPCost(next);
       }
     }
-    System.out.println(best_cost);
     return best_genes;
   }
 
   public static void runHC() {
     Integer[] initial = Chromosome.getPermutation();
-    System.out.println("CVRP: " + getSimpleCVRPCost(initial));
-    System.out.println("TSP: " + getSimpleTSPCost(initial));
     // Integer[] a = simpleHillClimbing(initial, false);
     // Integer[] b = simpleHillClimbing(initial, true);
     Integer[] a = steepestAscentHillClimbing(initial, false);
     Integer[] b = steepestAscentHillClimbing(initial, true);
-    System.out.println("CVRP: " + getSimpleCVRPCost(a));
-    System.out.println("TSP: " + getSimpleTSPCost(b));
   }
 
   public static Population  getPopulationOfLocalPeaks(int n) {
@@ -159,7 +154,6 @@ public class HillClimber {
     for(int i=0; i<n; i++) {
       Integer[] random_genes = Chromosome.getPermutation();
       Integer[] optimized_genes = steepestAscentHillClimbing(random_genes, true);
-      System.out.println(i + "\t: " + getSimpleTSPCost(optimized_genes));
       Chromosome new_chromosome = new Chromosome(optimized_genes);
       list.add(new_chromosome);
     }

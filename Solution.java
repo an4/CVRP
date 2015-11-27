@@ -41,7 +41,6 @@ public class Solution{
     routes.add(route);
 
     printSolution(br.toString(), cost);
-    System.out.println("SSC: " + cost);
   }
 
   public static double getRouteCost(ArrayList<Integer> route) {
@@ -116,17 +115,14 @@ public class Solution{
     }
 
     printSolution(br.toString(), best_cost);
-    System.out.println("Rand: " + best_cost);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-
-  public static void printSolution(String routes, Double cost) {
+  public static void printSolutionToFile(String routes, Double cost) {
     try {
       PrintWriter file = new PrintWriter("best-solution.txt", "UTF-8");
       file.println("login ad12461 52610");
       file.println("name Ana Dumitras");
-      file.println("algorithm Genetic Algorithm with crossover and mutation");
+      file.println("algorithm Genetic Algorithm with multiple crossover operators and multiple mutation techniques");
 
       file.println("cost " + cost);
       file.print(routes);
@@ -138,86 +134,16 @@ public class Solution{
     }
   }
 
-/******************************************************************************/
-  public static double getSmallRouteCost(ArrayList<Integer> route) {
-    double cost = 0.0;
-    for(int i=1; i<route.size(); i++) {
-      cost += Data.EDM[route.get(i-1)][route.get(i)];
-    }
-    return cost;
+  public static void printSolution(String routes, Double cost) {
+    System.out.println("login ad12461 52610");
+    System.out.println("name Ana Dumitras");
+    System.out.println("algorithm Genetic Algorithm with multiple crossover operators and multiple mutation techniques");
+    System.out.println("cost " + cost);
+    System.out.println(routes);
   }
-
-  public static void smallerRoutes(ArrayList<ArrayList<Integer>> routes) {
-    int total_routes_number = routes.size();
-    double cost[] = new double[total_routes_number];
-    double total_cost = 0.0;
-    for(int i=0; i<total_routes_number; i++) {
-      cost[i] = getSmallRouteCost(routes.get(i));
-      total_cost += cost[i];
-    }
-
-    System.out.println("C: " + total_cost);
-
-    Random random = new Random();
-
-    for(int i=0; i<total_routes_number-1; i++) {
-      for(int j=i+1; j<total_routes_number; j++) {
-        for(int k=0; k<500; k++) {
-          int a = random.nextInt(routes.get(i).size()-2) + 1;
-          int b = random.nextInt(routes.get(j).size()-2) + 1;
-          int city_a = routes.get(i).get(a);
-          int city_b = routes.get(j).get(b);
-
-          ArrayList<Integer> temp_a = new ArrayList<Integer>(routes.get(i));
-          ArrayList<Integer> temp_b = new ArrayList<Integer>(routes.get(j));
-
-          temp_a.set(a, city_b);
-          temp_b.set(b, city_a);
-
-          double new_cost_a = getSmallRouteCost(temp_a);
-          double new_cost_b = getSmallRouteCost(temp_b);
-
-          if(new_cost_a + new_cost_b < cost[i] + cost[j] &&
-          new_cost_a <= CAPACITY && new_cost_b <= CAPACITY) {
-            routes.set(i, temp_a);
-            routes.set(j, temp_b);
-            cost[i] = new_cost_a;
-            cost[j] = new_cost_b;
-          }
-        }
-      }
-    }
-
-    total_cost = 0.0;
-    for(int i=0; i<total_routes_number; i++) {
-      total_cost += cost[i];
-    }
-    System.out.println("C: " + total_cost);
-
-    StringBuilder br = new StringBuilder();
-    for(int i=0; i<routes.size(); i++) {
-      for(int j=0; j<routes.get(i).size(); j++) {
-        if(j == routes.get(i).size() -1) {
-          br.append((routes.get(i).get(j) + 1) + "\n");
-        } else {
-          br.append((routes.get(i).get(j) + 1) + "->");
-        }
-      }
-    }
-    printSolution(br.toString(), total_cost);
-  }
-
-/******************************************************************************/
 
   public static void main(String[] args) {
     Integer[] best = SimpleGA.runGA();
     getSimpleSolution(best);
-
-    Integer[] sol = HillClimber.steepestAscentHillClimbing(best, false);
-    getSimpleSolution(sol);
-
-    // HillClimber.runHC();
-
-    // Population population = HillClimber.getPopulationOfLocalPeaks(100);
   }
 }
