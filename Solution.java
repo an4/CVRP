@@ -213,6 +213,9 @@ public class Solution{
     Integer[] best = SimpleGA.runGA();
     getSimpleSolution(best);
 
+    Integer[] sol = HillClimber.steepestAscentHillClimbing(best, false);
+    getSimpleSolution(sol);
+
     // HillClimber.runHC();
 
     // Population population = HillClimber.getPopulationOfLocalPeaks(100);

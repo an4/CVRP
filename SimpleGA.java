@@ -230,11 +230,12 @@ public class SimpleGA {
       }
       Chromosome parent1 = initial[p1];
       Chromosome parent2 = initial[p2];
-      list.add(crossover(parent1, parent2));
 
-      // Chromosome[] babies = pmxCrossover(parent1, parent2);
-      // list.add(babies[0]);
-      // list.add(babies[1]);
+      // list.add(crossover(parent1, parent2));
+
+      Chromosome[] babies = pmxCrossover(parent1, parent2);
+      list.add(babies[0]);
+      list.add(babies[1]);
     }
 
     /* Mutation */
@@ -249,14 +250,14 @@ public class SimpleGA {
       }
     }
 
-    // int count = 0;
-    // for(Chromosome x: initial) {
-    //   if(count >= 100) {
-    //     break;
-    //   }
-    //   list.add(x);
-    //   count++;
-    // }
+    int count = 0;
+    for(Chromosome x: initial) {
+      if(count >= 50) {
+        break;
+      }
+      list.add(x);
+      count++;
+    }
 
     return new Population(list.toArray(new Chromosome[list.size()]), size);
   }
@@ -305,9 +306,9 @@ public class SimpleGA {
 
   /* */
   public static Integer[] runGA() {
-    int size = 6000;
-    int generations = 10000;
-    int GA_rounds = 1;
+    int size = 2000;
+    int generations = 5000;
+    int GA_rounds = 5;
 
     Population best = null;
     double cost = Double.MAX_VALUE;
@@ -319,7 +320,7 @@ public class SimpleGA {
       int similar = 0;
       double last_cost = population.getMinDistance();
       for(int j=0; j<generations; j++) {
-        System.out.println(population.getMinDistance());
+        System.out.println(j + "\t: " + population.getMinDistance());
         population = getNextGenerationRW(population);
         if(last_cost == population.getMinDistance()) {
           similar++;
@@ -327,7 +328,7 @@ public class SimpleGA {
           last_cost = population.getMinDistance();
           similar = 0;
         }
-        if(similar == 10) {
+        if(similar == 20) {
           break;
         }
       }
@@ -353,6 +354,6 @@ public class SimpleGA {
     // }
     System.out.println("GA: " + cost);
 
-    return HillClimber.simpleHillClimbing(best.getChromosomes()[0].getGenes(), true);
+    return best.getChromosomes()[0].getGenes();
   }
 }
