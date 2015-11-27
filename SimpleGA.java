@@ -8,7 +8,7 @@ public class SimpleGA {
 
   final static int CAPACITY = Data.CAPACITY;
 
-  final static double MUTATION_RATE = 0.05;
+  final static double MUTATION_RATE = 0.2;
 
   static void swapPosition(int gene1, int gene2, Integer[] baby) {
     int pos1 = 0;
@@ -83,6 +83,65 @@ public class SimpleGA {
     return new Chromosome(baby);
   }
 
+  static Chromosome orderedCrossover(Chromosome parent1, Chromosome parent2) {
+    Random random = new Random();
+    int begin = random.nextInt(DIMENSION-2) + 1;
+    int end = random.nextInt(DIMENSION-1-begin) + begin;
+    Integer[] mum = parent1.getGenes();
+    Integer[] dad = parent2.getGenes();
+    /* Keep track of added cities */
+    int[] added = new int[DIMENSION];
+    Integer[] baby = new Integer[DIMENSION];
+    /* Select a subset from the first parent */
+    for(int i=begin; i<end; i++) {
+      baby[i] = mum[i];
+      added[baby[i]] = 1;
+    }
+    /* Set start point */
+    baby[0] = 0;
+    /* Get genes from the other parent */
+    int j = end;
+    for(int i=1; i<dad.length; i++) {
+      if(j == dad.length) {
+        j = 1;
+      }
+      if(added[dad[i]] == 0) {
+        baby[j++] = dad[i];
+        added[dad[i]] = 1;
+      }
+    }
+    return new Chromosome(baby);
+  }
+
+  static Chromosome reorderCrossover(Chromosome parent1, Chromosome parent2) {
+    Random random = new Random();
+    int begin = random.nextInt(DIMENSION-2) + 1;
+    int end = random.nextInt(DIMENSION-1-begin) + begin;
+    Integer[] mum = parent1.getGenes();
+    Integer[] dad = parent2.getGenes();
+    /* Keep track of added cities */
+    int[] added = new int[DIMENSION];
+    Integer[] baby = new Integer[DIMENSION];
+    /*select subsets from first parent*/
+    for(int i=0; i<begin; i++) {
+      baby[i] = mum[i];
+      added[baby[i]] = 1;
+    }
+    for(int i=end; i<DIMENSION; i++) {
+      baby[i] = mum[i];
+      added[baby[i]] = 1;
+    }
+    int j = begin;
+    /* Get genes from the other parent */
+    for(int i=1; i<dad.length; i++) {
+      if(added[dad[i]] == 0) {
+        baby[j++] = dad[i];
+        added[dad[i]] = 1;
+      }
+    }
+    return new Chromosome(baby);
+  }
+
   /*  Swap Mutation */
   static Chromosome swapMutation(Chromosome x) {
     Random random = new Random();
@@ -92,6 +151,32 @@ public class SimpleGA {
     int temp_gene = genes[a];
     genes[a] = genes[b];
     genes[b] = temp_gene;
+    return new Chromosome(genes);
+  }
+
+  static Chromosome insertMutation(Chromosome x) {
+    Random random = new Random();
+    int pos = random.nextInt(DIMENSION-1) + 1;
+    int gene = random.nextInt(DIMENSION-1) + 1;
+    Integer[] genes = x.getGenes();
+    int gene_pos = 0;
+    for(int i=1; i<DIMENSION; i++) {
+      if(genes[i] == gene) {
+        gene_pos = i;
+        break;
+      }
+    }
+    if(gene_pos < pos) {
+      for(int i=gene_pos; i<pos; i++) {
+        genes[i] = genes[i+1];
+      }
+      genes[pos] = gene;
+    } else {
+      for(int i=gene_pos; i>pos; i--) {
+        genes[i] = genes[i-1];
+      }
+      genes[pos] = gene;
+    }
     return new Chromosome(genes);
   }
 
@@ -137,7 +222,7 @@ public class SimpleGA {
     List<Chromosome> list = new ArrayList<Chromosome>();
 
     /* Crossover = Roulette Wheel Selection + Crossover */
-    for(int i=0; i<2*size; i++) {
+    for(int i=0; i<size; i++) {
       int p1 = getParentRouletteWheel(population.getRouletteWheel());
       int p2 = getParentRouletteWheel(population.getRouletteWheel());
       while(p1 == p2) {
@@ -145,15 +230,23 @@ public class SimpleGA {
       }
       Chromosome parent1 = initial[p1];
       Chromosome parent2 = initial[p2];
-      list.add(crossover(parent1, parent2));
+      // list.add(crossover(parent1, parent2));
+
+      Chromosome[] babies = pmxCrossover(parent1, parent2);
+      list.add(babies[0]);
+      list.add(babies[1]);
     }
 
     /* Mutation */
     for(int i=0; i<list.size(); i++) {
       if(shouldMutate()) {
-        Chromosome mutated_chromosome = swapMutation(list.get(i));
+        Chromosome mutated_chromosome = insertMutation(list.get(i));
         list.set(i, mutated_chromosome);
       }
+    }
+
+    for(Chromosome x: initial) {
+      list.add(x);
     }
 
     return new Population(list.toArray(new Chromosome[list.size()]), size);
@@ -164,13 +257,17 @@ public class SimpleGA {
     Chromosome[] initial = population.getChromosomes();
     int size = initial.length;
     List<Chromosome> list = new ArrayList<Chromosome>();
-    int k = 5;
+    int k = 1;
 
     /* Crossover = Tournament Selection + Crossover */
-    for(int i=0; i<2*size; i++) {
+    for(int i=0; i<size; i++) {
       Chromosome parent1 = initial[getParentTournament(size, k)];
       Chromosome parent2 = initial[getParentTournament(size, k)];
-      list.add(crossover(parent1, parent2));
+      list.add(reorderCrossover(parent1, parent2));
+
+      // Chromosome[] babies = pmxCrossover(parent1, parent2);
+      // list.add(babies[0]);
+      // list.add(babies[1]);
     }
 
     /* Mutation */
@@ -181,13 +278,27 @@ public class SimpleGA {
       }
     }
 
+    for(Chromosome x: initial) {
+      list.add(x);
+    }
+
     return new Population(list.toArray(new Chromosome[list.size()]), size);
   }
 
+  public static Population cleanPopulation(Population population) {
+    Chromosome[] chromosomes = population.getChromosomes();
+    int i=0;
+    while(population.getMinDistance() == chromosomes[i].getDistance()) {
+      chromosomes[i] = new Chromosome();
+      i++;
+    }
+    return new Population(chromosomes);
+  }
+
   /* */
-  public static Population runGA() {
-    int size = 2000;
-    int generations = 4000;
+  public static Integer[] runGA() {
+    int size = 5000;
+    int generations = 10000;
     int GA_rounds = 1;
 
     Population best = null;
@@ -195,25 +306,24 @@ public class SimpleGA {
 
     /* Roulette Wheel Selection */
     for(int i=0; i<GA_rounds; i++) {
-      // Population population = new Population(size);
-      Population population = HillClimber.getPopulationOfLocalPeaks(size);
-      for(int j=0; j<generations; j++) {
-        // System.out.println(population.getMinDistance());
-        population = getNextGenerationRW(population);
-      }
-      // System.out.println(population.getMinDistance());
-      if(population.getMinDistance() < cost) {
-        cost = population.getMinDistance();
-        best = population;
-      }
-    }
-
-    /* Tournament Selection */
-    for(int i=0; i<GA_rounds; i++) {
       Population population = new Population(size);
+      // Population population = HillClimber.getPopulationOfLocalPeaks(size);
+      int similar = 0;
+      double last_cost = population.getMinDistance();
       for(int j=0; j<generations; j++) {
-        // System.out.println(population.getMinDistance());
-        population = getNextGenerationTS(population);
+        System.out.println(population.getMinDistance());
+        population = getNextGenerationRW(population);
+        if(last_cost == population.getMinDistance()) {
+          similar++;
+        } else {
+          last_cost = population.getMinDistance();
+          similar = 0;
+        }
+        if(similar == 100) {
+          System.out.println("Start cleaning.");
+          population = cleanPopulation(population);
+          System.out.println("Finish cleaning.");
+        }
       }
       // System.out.println(population.getMinDistance());
       if(population.getMinDistance() < cost) {
@@ -222,7 +332,21 @@ public class SimpleGA {
       }
     }
 
+    // /* Tournament Selection */
+    // for(int i=0; i<GA_rounds; i++) {
+    //   Population population = new Population(size);
+    //   for(int j=0; j<generations; j++) {
+    //     System.out.println(population.getMinDistance());
+    //     population = getNextGenerationTS(population);
+    //   }
+    //   // System.out.println(population.getMinDistance());
+    //   if(population.getMinDistance() < cost) {
+    //     cost = population.getMinDistance();
+    //     best = population;
+    //   }
+    // }
     System.out.println("GA: " + cost);
-    return best;
+
+    return HillClimber.simpleHillClimbing(best.getChromosomes()[0].getGenes(), false);
   }
 }

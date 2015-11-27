@@ -210,47 +210,10 @@ public class Solution{
 /******************************************************************************/
 
   public static void main(String[] args) {
-    // int size = 2000;
-    // int generations = 4000;
-    // int GA_rounds = 5;
-    //
-    // Integer[] best_genes = null;
-    // double cost = Double.MAX_VALUE;
-    //
-    // for(int i=0; i<GA_rounds; i++) {
-    //   Population population = new Population(size);
-    //   for(int j=0; j<generations; j++) {
-    //     // System.out.println(population.getMinDistance());
-    //     population = getNextGeneration(population);
-    //   }
-    //
-    //   Integer[] best = population.getChromosomes()[0].getGenes();
-    //
-    //   best = steepestAscentHillClimbing(best);
-    //
-    //   // System.out.println(population.getMinDistance());
-    //   if(Chromosome.computeDistance(best) < cost) {
-    //     cost = Chromosome.computeDistance(best);
-    //     best_genes = best;
-    //   }
-    // }
-    // System.out.println(cost);
-    //
-    // // Integer[] solution = steepestAscentHillClimbing(best_population.getChromosomes()[0].getGenes());
-    //
-    // // smallerRoutes(best_population.getChromosomes()[0].getGenes());
-    //
-    // getSimpleSolution(best_genes);
-    //
-    // // randomIntervalSolution(best_population);
-
-
-    Population population = SimpleGA.runGA();
+    Integer[] best = SimpleGA.runGA();
+    getSimpleSolution(best);
 
     // HillClimber.runHC();
-
-    //
-    // getSimpleSolution(population.getChromosomes()[0].getGenes());
 
     // Population population = HillClimber.getPopulationOfLocalPeaks(100);
   }
