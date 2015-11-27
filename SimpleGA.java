@@ -278,7 +278,7 @@ public class SimpleGA {
 
   /* */
   public static Integer[] runGA() {
-    int size = 3500;
+    int size = 4000;
     int generations = 2000;
     int GA_rounds = 5;
 
