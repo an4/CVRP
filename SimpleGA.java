@@ -278,9 +278,9 @@ public class SimpleGA {
 
   /* */
   public static Integer[] runGA() {
-    int size = 4000;
-    int generations = 2000;
-    int GA_rounds = 5;
+    int size = 5000;
+    int generations = 3000;
+    int GA_rounds = 4;
 
     Population best = null;
     double cost = Double.MAX_VALUE;
