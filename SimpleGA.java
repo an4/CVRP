@@ -306,8 +306,8 @@ public class SimpleGA {
 
   /* */
   public static Integer[] runGA() {
-    int size = 2000;
-    int generations = 5000;
+    int size = 3000;
+    int generations = 3000;
     int GA_rounds = 5;
 
     Population best = null;
@@ -316,7 +316,6 @@ public class SimpleGA {
     /* Roulette Wheel Selection */
     for(int i=0; i<GA_rounds; i++) {
       Population population = new Population(size);
-      // Population population = HillClimber.getPopulationOfLocalPeaks(size);
       int similar = 0;
       double last_cost = population.getMinDistance();
       for(int j=0; j<generations; j++) {
