@@ -113,35 +113,6 @@ public class SimpleGA {
     return new Chromosome(baby);
   }
 
-  static Chromosome reorderCrossover(Chromosome parent1, Chromosome parent2) {
-    Random random = new Random();
-    int begin = random.nextInt(DIMENSION-2) + 1;
-    int end = random.nextInt(DIMENSION-1-begin) + begin;
-    Integer[] mum = parent1.getGenes();
-    Integer[] dad = parent2.getGenes();
-    /* Keep track of added cities */
-    int[] added = new int[DIMENSION];
-    Integer[] baby = new Integer[DIMENSION];
-    /*select subsets from first parent*/
-    for(int i=0; i<begin; i++) {
-      baby[i] = mum[i];
-      added[baby[i]] = 1;
-    }
-    for(int i=end; i<DIMENSION; i++) {
-      baby[i] = mum[i];
-      added[baby[i]] = 1;
-    }
-    int j = begin;
-    /* Get genes from the other parent */
-    for(int i=1; i<dad.length; i++) {
-      if(added[dad[i]] == 0) {
-        baby[j++] = dad[i];
-        added[dad[i]] = 1;
-      }
-    }
-    return new Chromosome(baby);
-  }
-
   /*  Swap Mutation */
   static Chromosome swapMutation(Chromosome x) {
     Random random = new Random();
@@ -222,7 +193,7 @@ public class SimpleGA {
     List<Chromosome> list = new ArrayList<Chromosome>();
 
     /* Crossover = Roulette Wheel Selection + Crossover */
-    for(int i=0; i<2*size; i++) {
+    for(int i=0; i<4*size; i++) {
       int p1 = getParentRouletteWheel(population.getRouletteWheel());
       int p2 = getParentRouletteWheel(population.getRouletteWheel());
       while(p1 == p2) {
@@ -231,11 +202,11 @@ public class SimpleGA {
       Chromosome parent1 = initial[p1];
       Chromosome parent2 = initial[p2];
 
-      // list.add(crossover(parent1, parent2));
+      list.add(orderedCrossover(parent1, parent2));
 
-      Chromosome[] babies = pmxCrossover(parent1, parent2);
-      list.add(babies[0]);
-      list.add(babies[1]);
+      // Chromosome[] babies = pmxCrossover(parent1, parent2);
+      // list.add(babies[0]);
+      // list.add(babies[1]);
     }
 
     /* Mutation */
@@ -307,7 +278,7 @@ public class SimpleGA {
   /* */
   public static Integer[] runGA() {
     int size = 3000;
-    int generations = 3000;
+    int generations = 1500;
     int GA_rounds = 5;
 
     Population best = null;
@@ -319,7 +290,7 @@ public class SimpleGA {
       int similar = 0;
       double last_cost = population.getMinDistance();
       for(int j=0; j<generations; j++) {
-        System.out.println(j + "\t: " + population.getMinDistance());
+        // System.out.println(j + "\t: " + population.getMinDistance());
         population = getNextGenerationRW(population);
         if(last_cost == population.getMinDistance()) {
           similar++;
@@ -331,7 +302,7 @@ public class SimpleGA {
           break;
         }
       }
-      // System.out.println(population.getMinDistance());
+      System.out.println(population.getMinDistance());
       if(population.getMinDistance() < cost) {
         cost = population.getMinDistance();
         best = population;
